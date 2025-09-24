@@ -9,17 +9,11 @@ struct Produto {
     
 };
 
-struct Estoque {
+struct Cadastrar {
     
-
-
-    void cadastrarProduto(Produto produto) {
+    string cadastro(){
         
     }
-
-    string listarProdutos() {
-
-    } 
 
 };
 
@@ -27,9 +21,10 @@ struct Menu {
     void principal() {
         cout << "_________________________________________________\n"
              << "|                                               |\n"
-             << "|                 MENU PRINCIPAL                |\n"
+             << "|                MENU PRINCIPAL                 |\n"
              << "|_______________________________________________|\n"
-             << "|ENTRAR COMO:                                   |\n"
+             << "|                                               |\n"
+             << "|                 ENTRAR COMO:                  |\n"
              << "|                                               |\n"
              << "|               1- Administrador                |\n"
              << "|                                               |\n"
@@ -69,7 +64,7 @@ struct Menu {
         cin >> senha;
     }
 
-    void cadastrar(){
+    void cadastro(){
         cout << "_________________________________________________\n"
              << "|                                               |\n" 
              << "|                  CADASTRAR                    |\n"
@@ -108,9 +103,9 @@ struct Menu {
              << "|             METODO DE PAGAMENTO               |\n"
              << "|_______________________________________________|\n"
              << "|                                               |\n"
-             << "|                  1- a vista                   |\n"
+             << "|                  1- A vista                   |\n"
              << "|                                               |\n"
-             << "|                  2) CARTAO                    |\n"
+             << "|                  2- Cartao                    |\n"
              << "|_______________________________________________|\n";   
     }
     
