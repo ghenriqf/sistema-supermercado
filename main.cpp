@@ -3,21 +3,29 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <cstdlib>
+#include <ctime>
+
 using namespace std;
 
-string nomeArquivoAtual = "../produtos.csv";
+string nomeArquivoAtual = "./produtos.csv";
 
 
 struct Produto {
-    long id; 
+    int id; 
     string nomeProduto;
     float quantidadeProduto;
     float valorProduto;
 
+    Produto () {
+        id = rand();
+    }
+
 };
 
 struct Estoque {
-
+    
+    
     void cadastrarProduto(Produto produto) {
         ofstream arquivo(nomeArquivoAtual, ios::app);
 
@@ -63,19 +71,15 @@ struct Estoque {
 };
 
 
-void menuPrincipal() {
-    
-}
-
 int main() {
+    srand(time(nullptr));
+
     Estoque estoque;
     Produto produto;
-    Produto produto2;
-
     produto.nomeProduto = "Suco de laranja";
     produto.quantidadeProduto = 10;
     produto.valorProduto = 24.2;
-    
+
     estoque.cadastrarProduto(produto);
     estoque.listarProdutos(nomeArquivoAtual);
     
