@@ -25,76 +25,110 @@ struct Estoque {
 
 struct Menu {
     void principal() {
-        cout << "___________|MENU PRINCIPAL|___________" << endl
-             << "                                      " << endl
-             << "            ENTRAR COMO...            " << endl
-             << "                                      " << endl
-             << "         1)  ADMINISTRADOR            " << endl
-             << "                                      " << endl
-             << "         2)    CLIENTE                " << endl
-             << "                                      " << endl
-             << "         3) SAIR DO PROGRAMA          " << endl
-             << "______________________________________" << endl;
+        cout << "_________________________________________________\n"
+             << "|                                               |\n"
+             << "|                 MENU PRINCIPAL                |\n"
+             << "|_______________________________________________|\n"
+             << "|ENTRAR COMO:                                   |\n"
+             << "|                                               |\n"
+             << "|               1- Administrador                |\n"
+             << "|                                               |\n"
+             << "|               2- Cliente                      |\n"
+             << "|                                               |\n"
+             << "|               3- Sair do Programa             |\n"
+             << "|                                               |\n"
+             << "|_______________________________________________|\n";
     } 
 
+    void administrador(){
+        cout << "_________________________________________________\n" 
+             << "|                                               |\n" 
+             << "|                ADMINISTRADOR                  |\n" 
+             << "|_______________________________________________|\n" 
+             << "|                                               |\n" 
+             << "|               1- Login                        |\n" 
+             << "|                                               |\n" 
+             << "|               2- Cadastrar                    |\n" 
+             << "|                                               |\n" 
+             << "|               3- Voltar                       |\n" 
+             << "|                                               |\n" 
+             << "|_______________________________________________|\n";
+    }
+
     void login(){
-        cout << "_______________|LOGIN|________________" << endl
-             << "                                      " << endl
-             << "            ENTRAR COMO...            " << endl
-             << "                                      " << endl
-             << "         1)  ADMINISTRADOR            " << endl
-             << "                                      " << endl
-             << "         2)    CLIENTE                " << endl
-             << "                                      " << endl
-             << "         3) SAIR DO PROGRAMA          " << endl
-             << "______________________________________" << endl;
+        cout << "_________________________________________________\n" 
+             << "|                                               |\n" 
+             << "|                    LOGIN                      |\n" 
+             << "|_______________________________________________|\n";
+
+        string usuario, senha;
+
+        cout << "Usuario: ";
+        cin >> usuario;
+        cout << "Senha: ";
+        cin >> senha;
+    }
+
+    void cadastrar(){
+        cout << "_________________________________________________\n"
+             << "|                                               |\n" 
+             << "|                  CADASTRAR                    |\n"
+             << "|_______________________________________________|\n\n";
+
+        string usuario, senha;
+
+        cout << "Usuario: ";
+        cin >> usuario;
+        cout << "Senha: ";
+        cin >> senha;
+        cout << "Confirme sua senha: ";
     }
     
     void produtos(){
-        cout << "_______________|PRODUTOS|________________" << endl
-             << left << setw(5) << "ID" << setw(22) << "   NOME" << setw(6) << "QTD" << setw(10) << "VALOR" << endl
-             << left << setw(5) << "0" << setw(22) << "Banana" << setw(6) << "152" << setw(10) << "R$5,20" << endl
-             << left << setw(5) << "1" << setw(22) << "Morango" << setw(6) << "85" << setw(10) << "R$8,54" << endl
-             << left << setw(5) << "2" << setw(22) << "Kiwi" << setw(6) << "98" << setw(10) << "R$4,87" << endl
-             << left << setw(5) << "3" << setw(22) << "Goiaba" << setw(6) << "63" << setw(10) << "R$6,32" << endl
-             << "_________________________________________" << endl
-             << "                                         " << endl
-             << "     1) ADICIONAR PRODUTO AO CARRINHO    " << endl
-             << "                                         " << endl
-             << "     2) MENU PRINCIPAL                   " << endl
-             << "                                         " << endl
-             << "     3) FINALIZAR COMPRA                 " << endl
-             << "_________________________________________" << endl;
+        cout << "_________________________________________________\n" 
+             << "|                                               |\n" 
+             << "|                  PRODUTOS                     |\n" 
+             << "|_______________________________________________|\n\n"
+             << left << setw(5) << "ID" << setw(22) << "   NOME" << setw(6) << "QTD" << setw(10) << "VALOR" << endl;
+            
+        
+        cout << "_________________________________________________\n"
+             << "|                                               |\n"
+             << "|          1- Adicionar produto ao carrinho     |\n"
+             << "|                                               |\n"
+             << "|          2- Finalizar compra                  |\n"
+             << "|                                               |\n"
+             << "|          3- Menu principal                    |\n"
+             << "|_______________________________________________|\n";
     }
     
     void metodoPagamento() {
-        cout << "__________|METODO DE PAGAMENTO|__________" << endl
-             << "                                         " << endl
-             << "              1) A VISTA                 " << endl
-             << "                                         " << endl
-             << "              2) CARTAO                  " << endl
-             << "_________________________________________" << endl;   
+        cout << "_________________________________________________\n"
+             << "|                                               |\n"
+             << "|             METODO DE PAGAMENTO               |\n"
+             << "|_______________________________________________|\n"
+             << "|                                               |\n"
+             << "|                  1- a vista                   |\n"
+             << "|                                               |\n"
+             << "|                  2) CARTAO                    |\n"
+             << "|_______________________________________________|\n";   
     }
     
     void cartao(){
         float valor = 5342.14;
-        cout << "____________________________________" << endl
-             << "|                    |             |" << endl
-             << "|    Parcelamento    | Valor (R$)  |" << endl
-             << "|____________________|_____________|" << endl
-             << "|                    |             |" << endl
-             << "|" << left << setw(20) << " 2x SEM JUROS"  << "| R$"  << right << setw(9) << valor/2   << " |" << endl
-             << "|" << left << setw(20) << " 3x SEM JUROS" << "| R$" << right << setw(9) << valor/3   << " |" << endl
-             << "|" << left << setw(20) << " 4x COM 10% JUROS" << "| R$" << right << setw(9) << valor/4 + (valor * 0.10)  << " |" << endl
-             << "|" << left << setw(20) << " 5x COM 10% JUROS" << "| R$" << right << setw(9) << valor/5 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 6x COM 10% JUROS" << "| R$" << right << setw(9) << valor/6 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 7x COM 10% JUROS" << "| R$" << right << setw(9) << valor/7 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 8x COM 10% JUROS" << "| R$" << right << setw(9) << valor/8 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 9x COM 10% JUROS" << "| R$" << right << setw(9) << valor/9  + (valor * 0.10)<< " |" << endl
-             << "|" << left << setw(20) << " 10x COM 10% JUROS" << "| R$" << right << setw(9) << valor/10 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 11x COM 10% JUROS" << "| R$" << right << setw(9) << valor/11 + (valor * 0.10) << " |" << endl
-             << "|" << left << setw(20) << " 12x COM 10% JUROS" << "| R$" << right << setw(9) << valor/12 + (valor * 0.10) << " |" << endl
-             << "|____________________|_____________|" << endl;
+        cout << "_________________________________________________\n"
+             << "|                        |                      |\n"
+             << "|      PARCELAMENTO      |        VALOR         |\n"
+             << "|________________________|______________________|\n"
+             << "|                        |                      |\n";
+             for(int i = 2; i <= 12; i++) {
+                if (i < 4) {
+                    cout << "| " << right << setw(2) << i << left << setw(21) << "x sem juros"  << "|   R$ "  << left << setw(15) << valor/i << " |" << endl;
+                } else {
+                    cout << "| " << right << setw(2) << i << left << setw(21) << "x com 10% juros" << "|   R$ " << left << setw(15) << valor/i + (valor * 0.10)  << " |" << endl;
+                }
+             }
+        cout << "|________________________|______________________|\n";
     }
     
 };
@@ -103,6 +137,11 @@ int main() {
 
     Menu menu;
 
+    menu.principal();
+
     menu.produtos();
 
+    menu.metodoPagamento();
+
+    menu.cartao();
 }
