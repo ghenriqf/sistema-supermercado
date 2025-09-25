@@ -99,15 +99,10 @@ struct Estoque {
     }
 
 };
-struct Cadastrar {
-    
-    string cadastro(){
-        
-    }
-
-};
 
 struct Menu {
+    Estoque estoque;
+
     void principal() {
         cout << "_________________________________________________\n"
              << "|                                               |\n"
@@ -144,6 +139,9 @@ struct Menu {
         cout << "_________________________________________________\n" 
              << "|                                               |\n" 
              << "|                    LOGIN                      |\n" 
+             << "|_______________________________________________|\n"
+             << "|                                               |\n" 
+             << "|                  1- Voltar                    |\n"
              << "|_______________________________________________|\n";
 
         string usuario, senha;
@@ -159,14 +157,6 @@ struct Menu {
              << "|                                               |\n" 
              << "|                  CADASTRAR                    |\n"
              << "|_______________________________________________|\n\n";
-
-        string usuario, senha;
-
-        cout << "Usuario: ";
-        cin >> usuario;
-        cout << "Senha: ";
-        cin >> senha;
-        cout << "Confirme sua senha: ";
     }
     
     void produtos(){
@@ -174,8 +164,9 @@ struct Menu {
              << "|                                               |\n" 
              << "|                  PRODUTOS                     |\n" 
              << "|_______________________________________________|\n\n"
-             << left << setw(5) << "ID" << setw(22) << "   NOME" << setw(6) << "QTD" << setw(10) << "VALOR" << endl;
-            
+             << left << setw(9) << "ID" << setw(25) << "   NOME" << setw(8) << "QTD" << setw(15) << "VALOR" << endl;
+
+        estoque.listarProdutos(nomeArquivoAtual);
         
         cout << "_________________________________________________\n"
              << "|                                               |\n"
@@ -218,16 +209,94 @@ struct Menu {
     
 };
 
-int main() {
-
+struct Navegacao {
 
     Menu menu;
+    int opcao;
 
-    menu.principal();
+    void admin(){
+        cin >> opcao;
+        switch (opcao) {
+        case 1: {
+            string usuario, senha;
+            cout << "Usuario:";
+            cin >> usuario;
+            cout << "Senha: ";
+            cin >> senha;
+            break;
+        } case 2: {
+            string usuario, senha, confSenha;
+            cout << "Usuario:";
+            cin >> usuario;
+            cout << "Senha: ";
+            cin >> senha;
+            cout << "Confirme sua senha: ";
+            cin >> confSenha;
+            break;
+        }
+        default:
+            break;
+        }
+    }
 
-    menu.produtos();
+    void cliente(){
+        cin >> opcao;
+        switch (opcao)
+        {
+        case 1:
+            cout << "Adiciona o produto: ";
+            break;
 
-    menu.metodoPagamento();
+        case 2:
+        finalizarCompra();
+        
+        default:
+        break;
+    }
+}
 
-    menu.cartao();
+void finalizarCompra(){
+        menu.metodoPagamento();
+        cin >> opcao;
+        switch (opcao)
+        {
+        case 1:
+            cout << "Obrigado pela compra! volte sempre.";
+            break;
+        case 2:
+            parcelamento();
+        default:
+            break;
+        }
+    }
+
+    void parcelamento(){
+        menu.cartao();
+    }
+    
+};
+
+int main() {
+
+    Navegacao nav;
+    Administrador admin;
+    Menu menu;
+    
+    
+    int opcao;
+    
+    
+    while (true){
+        menu.principal();
+        cin >> opcao;
+        switch (opcao) {
+            case 1:
+            menu.administrador();
+            nav.admin();
+            break;
+
+            case 2:
+            menu.produtos();
+        }
+    }
 }
