@@ -5,11 +5,11 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+#include <string>
 
 using namespace std;
 
-string nomeArquivoAtual = "./produtos.csv";
-
+string nomeArquivoAtual = "../produtos.csv";
 
 struct Produto {
     int id; 
@@ -18,69 +18,87 @@ struct Produto {
     float valorProduto;
 
     Produto () {
-        id = rand();
+         id = rand();
     }
+};
+
+struct Administrador {
+
+    string nomeUsuario;
+    string senha;
+    
+    void cadastrar(Administrador adm) {
+        ofstream arquivo("../adms.csv", ios::app);
+
+        if (arquivo.is_open()) {
+            arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
+            arquivo.close();
+        } else {
+            throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+        }
+    }
+
 
 };
 
 struct Estoque {
-    
+
     
     void cadastrarProduto(Produto produto) {
         ofstream arquivo(nomeArquivoAtual, ios::app);
 
-        arquivo << "\n";
-        arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto;
+        if (arquivo.is_open()) {
+            arquivo << "\n";
+            arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto;
+        } else {
+              throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+        }
+        
     }
 
     void listarProdutos(string nomeArquivo) {
         ifstream arquivo(nomeArquivo);
         string linha;
 
-        while (getline(arquivo, linha)) {
-            stringstream ss(linha);
-            string palavra;
+        if (arquivo.is_open()) {
+            while (getline(arquivo, linha)) {
+                stringstream ss(linha);
+                string palavra;
 
-            int coluna = 0;
-            while (getline(ss, palavra, ',')) {
-                switch (coluna) {
-                case 0:
-                    cout << left << setw(9) << palavra; 
-                    coluna++;
-                    break;
-                case 1:
-                    cout << left << setw(25) << palavra; 
-                    coluna++;
-                    break;
-                case 2:
-                    cout << left << setw(8) << palavra; 
-                    coluna++;
-                    break;
-                default:
-                    cout << "R$";
-                    cout << left << setw(15) << palavra; 
-                    break;
+                int coluna = 0;
+                while (getline(ss, palavra, ',')) {
+                    switch (coluna) {
+                    case 0:
+                        cout << left << setw(9) << palavra; 
+                        coluna++;
+                        break;
+                    case 1:
+                        cout << left << setw(25) << palavra; 
+                        coluna++;
+                        break;
+                    case 2:
+                        cout << left << setw(8) << palavra; 
+                        coluna++;
+                        break;
+                    case 3:
+                        cout << "R$";
+                        cout << left << setw(15) << palavra; 
+                        break;
                 }  
-            }
+            } 
+            
             cout << endl;
-        }
 
+            } 
+        } 
+        else {
+              throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+        }
         arquivo.close();
     }
 
 };
 
-
 int main() {
-    srand(time(nullptr));
 
-    Estoque estoque;
-    Produto produto;
-    produto.nomeProduto = "Suco de laranja";
-    produto.quantidadeProduto = 10;
-    produto.valorProduto = 24.2;
-
-    estoque.cadastrarProduto(produto);
-    estoque.listarProdutos(nomeArquivoAtual);
-    
 }
