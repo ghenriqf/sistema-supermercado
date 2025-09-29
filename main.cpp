@@ -27,15 +27,22 @@ struct Administrador {
 
     string nomeUsuario;
     string senha;
+    string confSenha;
     
-    void cadastrar(Administrador adm) {
-        ofstream arquivo("../adms.csv", ios::app);
 
-        if (arquivo.is_open()) {
-            arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
-            arquivo.close();
+    void cadastrar(Administrador adm) {
+        if (senha == confSenha){
+            ofstream arquivo("../adms.csv", ios::app);
+    
+            if (arquivo.is_open()) {
+                arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
+                arquivo.close();
+                cout << "Conta criada com sucesso!" << endl;
+            } else {
+                throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+            }
         } else {
-            throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+            cout << "As senhas nao coincidem!" << endl;
         }
     }
 
@@ -181,12 +188,14 @@ struct Menu {
     void metodoPagamento() {
         cout << "_________________________________________________\n"
              << "|                                               |\n"
-             << "|             METODO DE PAGAMENTO               |\n"
+             << "|              METODO DE PAGAMENTO              |\n"
              << "|_______________________________________________|\n"
              << "|                                               |\n"
              << "|                  1- A vista                   |\n"
              << "|                                               |\n"
              << "|                  2- Cartao                    |\n"
+             << "|                                               |\n"
+             << "|                  3- Voltar                    |\n"
              << "|_______________________________________________|\n";   
     }
     
@@ -211,8 +220,9 @@ struct Menu {
 
 struct Navegacao {
 
+    Administrador adm;
     Menu menu;
-    int opcao;
+    int opcao = 0;
 
     void admin(){
         cin >> opcao;
@@ -225,14 +235,13 @@ struct Navegacao {
             cin >> senha;
             break;
         } case 2: {
-            string usuario, senha, confSenha;
-            cout << "Usuario:";
-            cin >> usuario;
+            cout << "Usuario: ";
+            cin >> adm.nomeUsuario;
             cout << "Senha: ";
-            cin >> senha;
+            cin >> adm.senha;
             cout << "Confirme sua senha: ";
-            cin >> confSenha;
-            break;
+            cin >> adm.confSenha;
+            adm.cadastrar(adm);
         }
         default:
             break;
@@ -240,18 +249,22 @@ struct Navegacao {
     }
 
     void cliente(){
-        cin >> opcao;
-        switch (opcao)
-        {
-        case 1:
-            cout << "Adiciona o produto: ";
+        opcao = 0;
+        while (opcao < 3) {
+            menu.produtos();
+            cin >> opcao;
+            switch (opcao)
+            {
+            case 1:
+                cout << "Adiciona o produto: " << endl;
+                break;
+    
+            case 2:
+            finalizarCompra();
+            opcao = 0;
+            default:
             break;
-
-        case 2:
-        finalizarCompra();
-        
-        default:
-        break;
+        }
     }
 }
 
@@ -261,7 +274,7 @@ void finalizarCompra(){
         switch (opcao)
         {
         case 1:
-            cout << "Obrigado pela compra! volte sempre.";
+            cout << "Obrigado pela compra! volte sempre." << endl;
             break;
         case 2:
             parcelamento();
@@ -283,20 +296,25 @@ int main() {
     Menu menu;
     
     
-    int opcao;
+    int opcao = 0;
     
     
-    while (true){
+    while (opcao < 3){
         menu.principal();
         cin >> opcao;
         switch (opcao) {
             case 1:
             menu.administrador();
             nav.admin();
+            opcao = 0;
             break;
-
+            
             case 2:
-            menu.produtos();
+            nav.cliente();
+            opcao = 0;
+            break;
         }
     }
+
+    cout << "Obrigado pela visita! ate mais.";
 }
