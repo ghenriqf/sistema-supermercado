@@ -50,7 +50,6 @@ struct Administrador {
 };
 
 struct Estoque {
-
     
     void cadastrarProduto(Produto produto) {
         ofstream arquivo(nomeArquivoAtual, ios::app);
@@ -107,105 +106,136 @@ struct Estoque {
 
 };
 
+struct Validacoes {
+    
+    void opcoesMenu(string entrada) {
+        if (entrada != "1" || entrada != "2" || entrada != "3" ) {
+            throw runtime_error("ERRO: Entrada invalida!");
+        }
+    }
+
+    void validarProdutos(string nomeProduto, float quantidade, float valor) {
+        
+        if (nomeProduto.length() <= 2 || nomeProduto.length() > 25) {
+            throw runtime_error("ERRO: Nome do produto invalido!");
+
+        } else if (quantidade <= 0) {
+            throw runtime_error("ERRO: Quantidade invalida!");
+
+        } else if (quantidade <= 0) {
+            throw runtime_error("ERRO: Valor invalida!");
+        }
+    }
+
+    
+};
+
 struct Menu {
     Estoque estoque;
+    Validacoes validacoes;
 
-    void principal() {
-        cout << "_________________________________________________\n"
-             << "|                                               |\n"
-             << "|                MENU PRINCIPAL                 |\n"
-             << "|_______________________________________________|\n"
-             << "|                                               |\n"
-             << "|                 ENTRAR COMO:                  |\n"
-             << "|                                               |\n"
-             << "|               1- Administrador                |\n"
-             << "|                                               |\n"
-             << "|               2- Cliente                      |\n"
-             << "|                                               |\n"
-             << "|               3- Sair do Programa             |\n"
-             << "|                                               |\n"
-             << "|_______________________________________________|\n";
+    void validarEntrada() {
+        
+    }
+    
+    string principal() {
+        
+        string entradaUsuario;
+
+        cout << "_______________________________________________\n"
+             << "                                               \n"
+             << "                MENU PRINCIPAL                 \n"
+             << "_______________________________________________\n"
+             << "                                               \n"
+             << "               1| Administrador                \n"
+             << "                                               \n"
+             << "               2| Cliente                      \n"
+             << "                                               \n"
+             << "               3| Sair do Programa             \n"
+             << "                                               \n"
+             << "_______________________________________________\n"
+             << "ESCOLHA A OPCAO: ";
+             cin >> entradaUsuario;
+
+             try {
+                validacoes.opcoesMenu(entradaUsuario);
+                cout << "foi";
+             } catch (const runtime_error& e) {
+                cout << e.what();
+             }
+            
     } 
 
     void administrador(){
-        cout << "_________________________________________________\n" 
-             << "|                                               |\n" 
-             << "|                ADMINISTRADOR                  |\n" 
-             << "|_______________________________________________|\n" 
-             << "|                                               |\n" 
-             << "|               1- Login                        |\n" 
-             << "|                                               |\n" 
-             << "|               2- Cadastrar                    |\n" 
-             << "|                                               |\n" 
-             << "|               3- Voltar                       |\n" 
-             << "|                                               |\n" 
-             << "|_______________________________________________|\n";
+        cout << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "                ADMINISTRADOR                  \n" 
+             << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "               1| Login                        \n" 
+             << "                                               \n" 
+             << "               2| Cadastrar                    \n" 
+             << "                                               \n" 
+             << "               3| Voltar                       \n" 
+             << "                                               \n" 
+             << "_______________________________________________\n"
+             << "ESCOLHA A OPCAO: ";
     }
 
     void login(){
-        cout << "_________________________________________________\n" 
-             << "|                                               |\n" 
-             << "|                    LOGIN                      |\n" 
-             << "|_______________________________________________|\n"
-             << "|                                               |\n" 
-             << "|                  1- Voltar                    |\n"
-             << "|_______________________________________________|\n";
-
-        string usuario, senha;
-
-        cout << "Usuario: ";
-        cin >> usuario;
-        cout << "Senha: ";
-        cin >> senha;
+        cout << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "                    LOGIN                      \n" 
+             << "_______________________________________________\n";
     }
 
     void cadastro(){
-        cout << "_________________________________________________\n"
-             << "|                                               |\n" 
-             << "|                  CADASTRAR                    |\n"
-             << "|_______________________________________________|\n\n";
+        cout << "_______________________________________________\n"
+             << "                                               \n" 
+             << "                  CADASTRAR                    \n"
+             << "_______________________________________________\n\n";
     }
     
     void produtos(){
-        cout << "_________________________________________________\n" 
-             << "|                                               |\n" 
-             << "|                  PRODUTOS                     |\n" 
-             << "|_______________________________________________|\n\n"
+        cout << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "                  PRODUTOS                     \n" 
+             << "_______________________________________________\n\n"
              << left << setw(9) << "ID" << setw(25) << "   NOME" << setw(8) << "QTD" << setw(15) << "VALOR" << endl;
 
         estoque.listarProdutos(nomeArquivoAtual);
         
-        cout << "_________________________________________________\n"
-             << "|                                               |\n"
-             << "|          1- Adicionar produto ao carrinho     |\n"
-             << "|                                               |\n"
-             << "|          2- Finalizar compra                  |\n"
-             << "|                                               |\n"
-             << "|          3- Menu principal                    |\n"
-             << "|_______________________________________________|\n";
+        cout << "_______________________________________________\n"
+             << "                                               \n"
+             << "          1| Adicionar produto ao carrinho     \n"
+             << "                                               \n"
+             << "          2| Finalizar compra                  \n"
+             << "                                               \n"
+             << "          3| Menu principal                    \n"
+             << "_______________________________________________\n";
     }
     
     void metodoPagamento() {
-        cout << "_________________________________________________\n"
-             << "|                                               |\n"
-             << "|              METODO DE PAGAMENTO              |\n"
-             << "|_______________________________________________|\n"
-             << "|                                               |\n"
-             << "|                  1- A vista                   |\n"
-             << "|                                               |\n"
-             << "|                  2- Cartao                    |\n"
-             << "|                                               |\n"
-             << "|                  3- Voltar                    |\n"
-             << "|_______________________________________________|\n";   
+        cout << "_______________________________________________\n"
+             << "                                               \n"
+             << "              METODO DE PAGAMENTO              \n"
+             << "_______________________________________________\n"
+             << "                                               \n"
+             << "                 1| A vista                    \n"
+             << "                                               \n"
+             << "                 2| Cartao                     \n"
+             << "                                               \n"
+             << "                 3| Voltar                     \n"
+             << "_______________________________________________\n";   
     }
     
     void cartao(){
         float valor = 5342.14;
-        cout << "_________________________________________________\n"
-             << "|                        |                      |\n"
-             << "|      PARCELAMENTO      |        VALOR         |\n"
-             << "|________________________|______________________|\n"
-             << "|                        |                      |\n";
+        cout << "_______________________________________________\n"
+             << "                        |                      \n"
+             << "      PARCELAMENTO      |        VALOR         \n"
+             << "________________________|______________________\n"
+             << "|                       |                      \n";
              for(int i = 2; i <= 12; i++) {
                 if (i < 4) {
                     cout << "| " << right << setw(2) << i << left << setw(21) << "x sem juros"  << "|   R$ "  << left << setw(15) << valor/i << " |" << endl;
@@ -213,7 +243,7 @@ struct Menu {
                     cout << "| " << right << setw(2) << i << left << setw(21) << "x com 10% juros" << "|   R$ " << left << setw(15) << valor/i + (valor * 0.10)  << " |" << endl;
                 }
              }
-        cout << "|________________________|______________________|\n";
+        cout << "_______________________|_______________________\n";
     }
     
 };
@@ -296,25 +326,5 @@ int main() {
     Menu menu;
     
     
-    int opcao = 0;
-    
-    
-    while (opcao < 3){
-        menu.principal();
-        cin >> opcao;
-        switch (opcao) {
-            case 1:
-            menu.administrador();
-            nav.admin();
-            opcao = 0;
-            break;
-            
-            case 2:
-            nav.cliente();
-            opcao = 0;
-            break;
-        }
-    }
-
-    cout << "Obrigado pela visita! ate mais.";
+   menu.principal();
 }
