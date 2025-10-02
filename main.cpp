@@ -107,6 +107,8 @@ struct Estoque {
 };
 
 struct Validacoes {
+
+    Estoque estoque;
     
     void opcoesMenu(string entrada) {
         if (entrada != "1" || entrada != "2" || entrada != "3" ) {
@@ -114,17 +116,35 @@ struct Validacoes {
         }
     }
 
-    void validarProdutos(string nomeProduto, float quantidade, float valor) {
+    void cadastrarProduto(Produto produto) {
         
-        if (nomeProduto.length() <= 2 || nomeProduto.length() > 25) {
+        if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
             throw runtime_error("ERRO: Nome do produto invalido!");
 
-        } else if (quantidade <= 0) {
+        } else if (produto.quantidadeProduto <= 0) {
             throw runtime_error("ERRO: Quantidade invalida!");
 
-        } else if (quantidade <= 0) {
-            throw runtime_error("ERRO: Valor invalida!");
+        } else if (produto.valorProduto <= 0) {
+            throw runtime_error("ERRO: Valor invalido!");
+        } else {
+            
         }
+
+
+    }
+
+    void validarAdministrador(Administrador adm, string confSenha) {
+        if (adm.nomeUsuario.length() <= 2 || adm.nomeUsuario.length() > 25) {
+            throw runtime_error("ERRO: Nome de usuario invalido!");
+
+        } else if (adm.senha != confSenha) {
+            throw runtime_error("ERRO: As senhas nao coincidem!");
+
+        } else if (adm.senha.length() <= 1) {
+            throw runtime_error("ERRO: Senha invalida!");
+
+        }
+        
     }
 
     
