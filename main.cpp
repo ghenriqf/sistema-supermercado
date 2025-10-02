@@ -6,8 +6,13 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <optional>
+
 
 using namespace std;
+
+string nomeArquivoEstoque = "../produtos.csv";
+string nomeArquivoAdms = "../adms.csv";
 
 struct Produto {
     int id;
@@ -36,14 +41,39 @@ struct Administrador {
             throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
         }
     }
+
+    Administrador buscarAdministrador (string nomeUsuario) {
+        ifstream estoque(nomeArquivoAdms);
+        Administrador adm;
+
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+            getline(ss, campo, ',');
+
+            if (nomeUsuario == campo) {
+                adm.nomeUsuario = campo;
+                getline(ss,campo,',');
+                adm.senha = campo;
+                return adm;
+            }
+        }
+
+        return Administrador{};
+    }
 };
 
 struct Estoque {
 
-    string nomeArquivoAtual;
-
     Produto buscarProduto(int id) {
-        ifstream estoque(nomeArquivoAtual);
+        ifstream estoque(nomeArquivoEstoque);
 
         if (!estoque.is_open()) {
             throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
@@ -73,14 +103,14 @@ struct Estoque {
             }
         }
 
-        throw runtime_error("ERRO: Produto nao encontrado!");
+        return Produto{};
         estoque.close();
     }
 
     void atualizarProduto(Produto atualizado) {
 
         ofstream temp("../temp.csv");
-        ifstream arquivo(nomeArquivoAtual);
+        ifstream arquivo(nomeArquivoEstoque);
 
         if (!arquivo.is_open() || !temp.is_open()) {
             throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
@@ -105,12 +135,12 @@ struct Estoque {
         arquivo.close();
         temp.close();
 
-        remove(nomeArquivoAtual.c_str());
-        rename("../temp.csv", nomeArquivoAtual.c_str());
+        remove(nomeArquivoEstoque.c_str());
+        rename("../temp.csv", nomeArquivoEstoque.c_str());
     }
 
     void cadastrarProduto(Produto produto) {
-        ofstream arquivo(nomeArquivoAtual, ios::app);
+        ofstream arquivo(nomeArquivoEstoque, ios::app);
 
         if (arquivo.is_open()) {
             arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto << "\n";
@@ -159,6 +189,69 @@ struct Estoque {
         }
         arquivo.close();
     }
+};
+
+
+struct Validacoes {
+
+    Estoque estoque;
+    Administrador adm;
+    
+    void opcoesMenu(string entrada) {
+        if (entrada != "1" && entrada != "2" && entrada != "3" ) {
+            throw runtime_error("ERRO: Entrada invalida!");
+        }
+    }
+
+    void cadastrarProduto(Produto produto) {
+        
+        if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
+            throw runtime_error("ERRO: Nome do produto invalido!");
+
+        } else if (produto.quantidadeProduto <= 0) {
+            throw runtime_error("ERRO: Quantidade invalida!");
+
+        } else if (produto.valorProduto <= 0) {
+            throw runtime_error("ERRO: Valor invalido!");
+        } else {
+            estoque.cadastrarProduto(produto);
+        }
+
+    }
+
+    void cadastrarAdministrador(Administrador administrador, string confSenha) {
+        Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
+
+        if(!admBusca.nomeUsuario.empty()) {
+            throw runtime_error("ERRO: Nome de usuario ja cadastrado!");
+        }
+        else if (administrador.nomeUsuario.length() <= 2 || administrador.nomeUsuario.length() > 25) {
+            throw runtime_error("ERRO: Nome de usuario invalido!");
+
+        } else if (administrador.senha != confSenha) {
+            throw runtime_error("ERRO: As senhas nao coincidem!");
+
+        } else if (administrador.senha.length() <= 1) {
+            throw runtime_error("ERRO: Senha invalida!");
+        } else {
+            adm.cadastrar(administrador);
+        }
+    }
+
+    void loginAdiministrador (Administrador administrador) {
+        Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
+
+        if (admBusca.nomeUsuario.empty()) {
+            throw runtime_error("ERRO: Login invalido!");
+        }
+
+        else if (admBusca.senha != administrador.senha) {
+            throw runtime_error("ERRO: Senha invalida!");
+        }
+
+    }
+
+    
 };
 
 int main() {
