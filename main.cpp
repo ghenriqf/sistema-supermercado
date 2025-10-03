@@ -72,7 +72,7 @@ struct Administrador {
 
 struct Estoque {
 
-    Produto buscarProduto(int id) {
+    Produto buscarProdutoPorId(int id) {
         ifstream estoque(nomeArquivoEstoque);
 
         if (!estoque.is_open()) {
@@ -93,6 +93,40 @@ struct Estoque {
             if (produto.id == id) {
                 getline(ss, produto.nomeProduto, ',');
 
+                getline(ss, campo, ',');
+                produto.quantidadeProduto = stof(campo);
+
+                getline(ss, campo, ',');
+                produto.valorProduto = stof(campo);
+
+                return produto;
+            }
+        }
+
+        return Produto{};
+        estoque.close();
+    }
+
+     Produto buscarProdutoPorNome(string nome) {
+        ifstream estoque(nomeArquivoEstoque);
+
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+        Produto produto;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            getline(ss, produto.nomeProduto, ',');
+            if (produto.nomeProduto == nome) {
                 getline(ss, campo, ',');
                 produto.quantidadeProduto = stof(campo);
 
@@ -179,7 +213,6 @@ struct Estoque {
            
         }
         
-        
         arquivo.close();
         return produtos;
     }
@@ -197,8 +230,11 @@ struct Validacoes {
     }
 
     void cadastrarProduto(Produto produto) {
-        
-        if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
+        Produto produtoBusca = estoque.buscarProdutoPorNome(produto.nomeProduto);
+        if (!produtoBusca.nomeProduto.empty()) {
+            throw runtime_error("ERRO: Produto ja cadastrado!");
+        }
+        else if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
             throw runtime_error("ERRO: Nome do produto invalido!");
 
         } else if (produto.quantidadeProduto <= 0) {
