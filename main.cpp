@@ -106,40 +106,6 @@ struct Estoque {
         estoque.close();
     }
 
-     Produto buscarProdutoPorNome(string nome) {
-        ifstream estoque(nomeArquivoEstoque);
-
-        if (!estoque.is_open()) {
-            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
-        }
-
-        string linha;
-        Produto produto;
-
-        while (getline(estoque, linha)) {
-            stringstream ss(linha);
-
-            string campo;
-
-            getline(ss, campo, ',');
-            produto.id = stoi(campo);
-
-            getline(ss, produto.nomeProduto, ',');
-            if (produto.nomeProduto == nome) {
-                getline(ss, campo, ',');
-                produto.quantidadeProduto = stof(campo);
-
-                getline(ss, campo, ',');
-                produto.valorProduto = stof(campo);
-
-                return produto;
-            }
-        }
-
-        return Produto{};
-        estoque.close();
-    }
-
     void atualizarProduto(Produto atualizado) {
 
         ofstream temp("../temp.csv");
@@ -229,11 +195,14 @@ struct Validacoes {
     }
 
     void cadastrarProduto(Produto produto) {
-        Produto produtoBusca = estoque.buscarProdutoPorNome(produto.nomeProduto);
-        if (!produtoBusca.nomeProduto.empty()) {
-            throw runtime_error("ERRO: Produto ja cadastrado!");
+        vector <Produto> produtos = estoque.listarProdutos();
+
+        for (Produto prod : produtos) {
+            if (prod.nomeProduto == produto.nomeProduto ) {
+                throw runtime_error("ERRO: Produto ja cadastrado!");
+            }
         }
-        else if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
+        if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
             throw runtime_error("ERRO: Nome do produto invalido!");
 
         } else if (produto.quantidadeProduto <= 0) {
@@ -435,4 +404,5 @@ struct Menu {
 
 
 int main() {
+    srand(time(0));
 }
