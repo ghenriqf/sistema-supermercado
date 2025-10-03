@@ -1,5 +1,4 @@
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -7,10 +6,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-string nomeArquivoAtual = "../produtos.csv";
+string nomeArquivoEstoque = "../produtos.csv";
+string nomeArquivoAdms = "../adms.csv";
 
 struct Produto {
     int id; 
@@ -27,98 +28,212 @@ struct Administrador {
 
     string nomeUsuario;
     string senha;
-    string confSenha;
     
-
     void cadastrar(Administrador adm) {
-        if (senha == confSenha){
-            ofstream arquivo("../adms.csv", ios::app);
-    
-            if (arquivo.is_open()) {
-                arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
-                arquivo.close();
-                cout << "Conta criada com sucesso!" << endl;
-            } else {
-                throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
-            }
-        } else {
-            cout << "As senhas nao coincidem!" << endl;
+        ofstream arquivo("../adms.csv", ios::app);
+
+        if (arquivo.is_open()) {
+            arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
+            arquivo.close();
+        }
+        else {
+            throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
         }
     }
 
+    Administrador buscarAdministrador (string nomeUsuario) {
+        ifstream estoque(nomeArquivoAdms);
+        Administrador adm;
 
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+            getline(ss, campo, ',');
+
+            if (nomeUsuario == campo) {
+                adm.nomeUsuario = campo;
+                getline(ss,campo,',');
+                adm.senha = campo;
+                return adm;
+            }
+        }
+
+        return Administrador{};
+    }
 };
 
 struct Estoque {
-    
-    void cadastrarProduto(Produto produto) {
-        ofstream arquivo(nomeArquivoAtual, ios::app);
 
-        if (arquivo.is_open()) {
-            arquivo << "\n";
-            arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto;
-        } else {
-              throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+    Produto buscarProdutoPorId(int id) {
+        ifstream estoque(nomeArquivoEstoque);
+
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
         }
-        
+
+        string linha;
+        Produto produto;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            if (produto.id == id) {
+                getline(ss, produto.nomeProduto, ',');
+
+                getline(ss, campo, ',');
+                produto.quantidadeProduto = stof(campo);
+
+                getline(ss, campo, ',');
+                produto.valorProduto = stof(campo);
+
+                return produto;
+            }
+        }
+
+        return Produto{};
+        estoque.close();
     }
 
-    void listarProdutos(string nomeArquivo) {
-        ifstream arquivo(nomeArquivo);
+     Produto buscarProdutoPorNome(string nome) {
+        ifstream estoque(nomeArquivoEstoque);
+
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+        Produto produto;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            getline(ss, produto.nomeProduto, ',');
+            if (produto.nomeProduto == nome) {
+                getline(ss, campo, ',');
+                produto.quantidadeProduto = stof(campo);
+
+                getline(ss, campo, ',');
+                produto.valorProduto = stof(campo);
+
+                return produto;
+            }
+        }
+
+        return Produto{};
+        estoque.close();
+    }
+
+    void atualizarProduto(Produto atualizado) {
+
+        ofstream temp("../temp.csv");
+        ifstream arquivo(nomeArquivoEstoque);
+
+        if (!arquivo.is_open() || !temp.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
         string linha;
 
-        if (arquivo.is_open()) {
-            while (getline(arquivo, linha)) {
-                stringstream ss(linha);
-                string palavra;
+        while (getline(arquivo, linha)) {
+            string id;
 
-                int coluna = 0;
-                while (getline(ss, palavra, ',')) {
-                    switch (coluna) {
-                    case 0:
-                        cout << left << setw(9) << palavra; 
-                        coluna++;
-                        break;
-                    case 1:
-                        cout << left << setw(25) << palavra; 
-                        coluna++;
-                        break;
-                    case 2:
-                        cout << left << setw(8) << palavra; 
-                        coluna++;
-                        break;
-                    case 3:
-                        cout << "R$";
-                        cout << left << setw(15) << palavra; 
-                        break;
-                }  
-            } 
-            
-            cout << endl;
+            stringstream ss(linha);
+            getline(ss, id, ',');
 
-            } 
-        } 
-        else {
-              throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+            if (id == to_string(atualizado.id)) {
+                temp << atualizado.id << ',' << atualizado.nomeProduto << ',' << atualizado.quantidadeProduto << ',' << atualizado.valorProduto << endl;
+            }
+            else {
+                temp << linha << endl;
+            }
         }
+
         arquivo.close();
+        temp.close();
+
+        remove(nomeArquivoEstoque.c_str());
+        rename("../temp.csv", nomeArquivoEstoque.c_str());
     }
 
+    void cadastrarProduto(Produto produto) {
+        ofstream arquivo(nomeArquivoEstoque, ios::app);
+
+        if (arquivo.is_open()) {
+            arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto << "\n";
+        }
+        else {
+            throw runtime_error("ERRO: Nao foi possivel abrir o arquivo!");
+        }
+    }
+
+    vector<Produto> listarProdutos() {
+        ifstream arquivo(nomeArquivoEstoque);
+        string linha;
+        vector<Produto> produtos;
+
+        if (!arquivo.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+        
+        while (getline(arquivo, linha)) {
+            stringstream ss(linha);
+            Produto produto;
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            getline(ss, produto.nomeProduto, ',');
+
+            getline(ss, campo, ',');
+            produto.quantidadeProduto = stof(campo);
+
+            getline(ss, campo, ',');
+            produto.valorProduto = stof(campo);
+
+            produtos.push_back(produto);
+           
+        }
+        
+        arquivo.close();
+        return produtos;
+    }
 };
 
 struct Validacoes {
 
     Estoque estoque;
+    Administrador adm;
     
     void opcoesMenu(string entrada) {
-        if (entrada != "1" || entrada != "2" || entrada != "3" ) {
+        if (entrada != "1" && entrada != "2" && entrada != "3" ) {
             throw runtime_error("ERRO: Entrada invalida!");
         }
     }
 
     void cadastrarProduto(Produto produto) {
-        
-        if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
+        Produto produtoBusca = estoque.buscarProdutoPorNome(produto.nomeProduto);
+        if (!produtoBusca.nomeProduto.empty()) {
+            throw runtime_error("ERRO: Produto ja cadastrado!");
+        }
+        else if (produto.nomeProduto.length() <= 2 || produto.nomeProduto.length() > 25) {
             throw runtime_error("ERRO: Nome do produto invalido!");
 
         } else if (produto.quantidadeProduto <= 0) {
@@ -127,36 +242,47 @@ struct Validacoes {
         } else if (produto.valorProduto <= 0) {
             throw runtime_error("ERRO: Valor invalido!");
         } else {
-            
+            estoque.cadastrarProduto(produto);
         }
-
 
     }
 
-    void validarAdministrador(Administrador adm, string confSenha) {
-        if (adm.nomeUsuario.length() <= 2 || adm.nomeUsuario.length() > 25) {
+    void cadastrarAdministrador(Administrador administrador, string confSenha) {
+        Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
+
+        if(!admBusca.nomeUsuario.empty()) {
+            throw runtime_error("ERRO: Nome de usuario ja cadastrado!");
+        }
+        else if (administrador.nomeUsuario.length() <= 2 || administrador.nomeUsuario.length() > 25) {
             throw runtime_error("ERRO: Nome de usuario invalido!");
 
-        } else if (adm.senha != confSenha) {
+        } else if (administrador.senha != confSenha) {
             throw runtime_error("ERRO: As senhas nao coincidem!");
 
-        } else if (adm.senha.length() <= 1) {
+        } else if (administrador.senha.length() <= 2) {
             throw runtime_error("ERRO: Senha invalida!");
-
+        } else {
+            adm.cadastrar(administrador);
         }
-        
     }
 
-    
+    void loginAdiministrador (Administrador administrador) {
+        Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
+
+        if (admBusca.nomeUsuario.empty()) {
+            throw runtime_error("ERRO: Login invalido!");
+        }
+
+        else if (admBusca.senha != administrador.senha) {
+            throw runtime_error("ERRO: Senha invalida!");
+        }
+
+    }
 };
 
 struct Menu {
-    Estoque estoque;
-    Validacoes validacoes;
 
-    void validarEntrada() {
-        
-    }
+    Validacoes validar;
     
     string principal() {
         
@@ -176,17 +302,19 @@ struct Menu {
              << "_______________________________________________\n"
              << "ESCOLHA A OPCAO: ";
              cin >> entradaUsuario;
-
-             try {
-                validacoes.opcoesMenu(entradaUsuario);
-                cout << "foi";
-             } catch (const runtime_error& e) {
+            try {
+                validar.opcoesMenu(entradaUsuario);
+                return entradaUsuario;
+            } catch (const runtime_error& e) {
                 cout << e.what();
-             }
+            }
             
     } 
 
-    void administrador(){
+    string administrador(){
+
+        string entradaUsuario;
+
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "                ADMINISTRADOR                  \n" 
@@ -198,22 +326,60 @@ struct Menu {
              << "                                               \n" 
              << "               3| Voltar                       \n" 
              << "                                               \n" 
-             << "_______________________________________________\n"
+             << "_______________________________________________\n\n"
              << "ESCOLHA A OPCAO: ";
+            cin >> entradaUsuario;
+            try {
+                validar.opcoesMenu(entradaUsuario);
+                return entradaUsuario;
+            } catch (const runtime_error& e) {
+                cout << e.what();
+            }
+
     }
 
     void login(){
+
+        Administrador administrador;
+
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "                    LOGIN                      \n" 
-             << "_______________________________________________\n";
+             << "_______________________________________________\n\n";
+            cout << "NOME DE USUARIO: ";
+            cin >> administrador.nomeUsuario;
+            cout << "SENHA: ";
+            cin >> administrador.senha;
+            try {
+                validar.loginAdiministrador(administrador);
+                cout << "Administrador conectado com sucesso!";
+            } catch (const runtime_error& e) {
+                cout << e.what();
+            }
     }
 
     void cadastro(){
+
+        Administrador administrador;
+        string confSenha;
+
         cout << "_______________________________________________\n"
              << "                                               \n" 
              << "                  CADASTRAR                    \n"
              << "_______________________________________________\n\n";
+            cout << "LOGIN: ";
+            cin >> administrador.nomeUsuario;
+            cout << "SENHA: ";
+            cin >> administrador.senha;
+
+            try {
+                validar.cadastrarAdministrador(administrador, confSenha);
+                cout << "Administrador cadastrado com sucesso!";
+            } catch (const runtime_error& e) {
+                cout << e.what();
+            } 
+
+
     }
     
     void produtos(){
@@ -223,7 +389,6 @@ struct Menu {
              << "_______________________________________________\n\n"
              << left << setw(9) << "ID" << setw(25) << "   NOME" << setw(8) << "QTD" << setw(15) << "VALOR" << endl;
 
-        estoque.listarProdutos(nomeArquivoAtual);
         
         cout << "_______________________________________________\n"
              << "                                               \n"
@@ -232,7 +397,7 @@ struct Menu {
              << "          2| Finalizar compra                  \n"
              << "                                               \n"
              << "          3| Menu principal                    \n"
-             << "_______________________________________________\n";
+             << "_______________________________________________\n\n";
     }
     
     void metodoPagamento() {
@@ -246,7 +411,7 @@ struct Menu {
              << "                 2| Cartao                     \n"
              << "                                               \n"
              << "                 3| Voltar                     \n"
-             << "_______________________________________________\n";   
+             << "_______________________________________________\n\n";   
     }
     
     void cartao(){
@@ -263,88 +428,11 @@ struct Menu {
                     cout << "| " << right << setw(2) << i << left << setw(21) << "x com 10% juros" << "|   R$ " << left << setw(15) << valor/i + (valor * 0.10)  << " |" << endl;
                 }
              }
-        cout << "_______________________|_______________________\n";
+        cout << "_______________________|_______________________\n\n";
     }
     
 };
 
-struct Navegacao {
-
-    Administrador adm;
-    Menu menu;
-    int opcao = 0;
-
-    void admin(){
-        cin >> opcao;
-        switch (opcao) {
-        case 1: {
-            string usuario, senha;
-            cout << "Usuario:";
-            cin >> usuario;
-            cout << "Senha: ";
-            cin >> senha;
-            break;
-        } case 2: {
-            cout << "Usuario: ";
-            cin >> adm.nomeUsuario;
-            cout << "Senha: ";
-            cin >> adm.senha;
-            cout << "Confirme sua senha: ";
-            cin >> adm.confSenha;
-            adm.cadastrar(adm);
-        }
-        default:
-            break;
-        }
-    }
-
-    void cliente(){
-        opcao = 0;
-        while (opcao < 3) {
-            menu.produtos();
-            cin >> opcao;
-            switch (opcao)
-            {
-            case 1:
-                cout << "Adiciona o produto: " << endl;
-                break;
-    
-            case 2:
-            finalizarCompra();
-            opcao = 0;
-            default:
-            break;
-        }
-    }
-}
-
-void finalizarCompra(){
-        menu.metodoPagamento();
-        cin >> opcao;
-        switch (opcao)
-        {
-        case 1:
-            cout << "Obrigado pela compra! volte sempre." << endl;
-            break;
-        case 2:
-            parcelamento();
-        default:
-            break;
-        }
-    }
-
-    void parcelamento(){
-        menu.cartao();
-    }
-    
-};
 
 int main() {
-
-    Navegacao nav;
-    Administrador admin;
-    Menu menu;
-    
-    
-   menu.principal();
 }
