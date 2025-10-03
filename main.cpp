@@ -395,20 +395,28 @@ struct Interacao {
     void menuLoginAmd(){
 
         Administrador administrador;
+        Interacao interacao;
 
-        cout << "_______________________________________________\n" 
-             << "                                               \n" 
-             << "                    LOGIN                      \n" 
-             << "_______________________________________________\n\n";
-        cout << "NOME DE USUARIO: ";
-        cin >> administrador.nomeUsuario;
-        cout << "SENHA: ";
-        cin >> administrador.senha;
-        try {
-            validar.loginAdiministrador(administrador);
-            cout << "Administrador conectado com sucesso!";
-        } catch (const runtime_error& e) {
-            cout << e.what() << endl;
+        while (true)  {
+            cout << "_______________________________________________\n" 
+                 << "                                               \n" 
+                 << "                    LOGIN                      \n" 
+                 << "_______________________________________________\n\n";
+            try {
+                cout << "NOME DE USUARIO: ";
+                cin >> administrador.nomeUsuario;
+
+                cout << "SENHA: ";
+                cin >> administrador.senha;
+
+                validar.loginAdiministrador(administrador);
+                system("cls");
+                interacao.menuGerenciarProdutos();
+                break;
+
+            } catch (const runtime_error& e) {
+                cout << e.what() << endl;
+            }
         }
     }
 
@@ -418,25 +426,33 @@ struct Interacao {
         Interacao interacao;
         string confSenha;
 
-        cout << "_______________________________________________\n"
-             << "                                               \n" 
-             << "                  CADASTRAR                    \n"
-             << "_______________________________________________\n\n";
-        cout << "LOGIN: ";
-        cin >> administrador.nomeUsuario;
-        cout << "SENHA: ";
-        cin >> administrador.senha;
+        while (true){
+            cout << "_______________________________________________\n"
+                 << "                                               \n" 
+                 << "                  CADASTRAR                    \n"
+                 << "_______________________________________________\n\n";
+            try {
+                cout << "NOME DE USUARIO: ";
+                cin >> administrador.nomeUsuario;
 
-        try {
-            validar.cadastrarAdministrador(administrador, confSenha);
-            cout << "Administrador cadastrado com sucesso!";
-            interacao.menuLoginAmd();
-        } catch (const runtime_error& e) {
-            cout << e.what() << endl;
-        } 
+                cout << "SENHA: ";
+                cin >> administrador.senha;
+
+                cout << "CONFIRME A SENHA: ";
+                cin >> confSenha;
+
+                validar.cadastrarAdministrador(administrador, confSenha);
+                cout << "Administrador cadastrado com sucesso!" << endl;
+
+                interacao.menuLoginAmd();
+            } catch (const runtime_error& e) {
+                cout << e.what() << endl;
+            } 
+        }
     }
 
     void menuGerenciarProdutos() {
+
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "              GERENCIAR ESTOQUE                \n" 
@@ -509,4 +525,10 @@ struct Interacao {
 
 int main() {
     srand(time(0));
+
+    Interacao interacao;
+
+    while (true) {
+        interacao.menuPrincipal();
+    }
 }
