@@ -294,14 +294,15 @@ struct Validacoes {
     }
 };
 
-struct Menu {
+struct Interacao {
 
     Validacoes validar;
-    
-    string principal() {
-        
-        string entradaUsuario;
+    Estoque estoque;
 
+    void menuPrincipal() {
+        string entradaUsuario;
+        Interacao interacao;
+        
         cout << "_______________________________________________\n"
              << "                                               \n"
              << "                MENU PRINCIPAL                 \n"
@@ -313,21 +314,41 @@ struct Menu {
              << "                                               \n"
              << "               3| Sair do Programa             \n"
              << "                                               \n"
-             << "_______________________________________________\n"
-             << "ESCOLHA A OPCAO: ";
-             cin >> entradaUsuario;
+             << "_______________________________________________\n";
+        
+        while (true) {
+            cout  << "ESCOLHA A OPCAO: ";
             try {
+                cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario);
-                return entradaUsuario;
-            } catch (const runtime_error& e) {
-                cout << e.what();
+                system("cls");
+
+                int entradaUsuarioInt = stoi(entradaUsuario);
+                switch (entradaUsuarioInt)
+                {
+                case 1:
+                    interacao.menuAdministrador();
+                    break;
+                
+                case 2:
+                    interacao.menuProdutos();
+                    break;
+                case 3:
+                    cout << "Obrigado por tudo!";
+                    break;
+                }
+                break;
+            } 
+            catch (const runtime_error& e) {
+                cout << e.what() << endl;
             }
-            
+        }
     } 
 
-    string administrador(){
+    void menuAdministrador(){
 
         string entradaUsuario;
+        Interacao interacao;
 
         cout << "_______________________________________________\n" 
              << "                                               \n" 
@@ -340,19 +361,38 @@ struct Menu {
              << "                                               \n" 
              << "               3| Voltar                       \n" 
              << "                                               \n" 
-             << "_______________________________________________\n\n"
-             << "ESCOLHA A OPCAO: ";
-            cin >> entradaUsuario;
+             << "_______________________________________________\n\n";
+         while (true) {
+            cout  << "ESCOLHA A OPCAO: ";
             try {
+                cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario);
-                return entradaUsuario;
-            } catch (const runtime_error& e) {
-                cout << e.what();
+                system("cls");
+
+                int entradaUsuarioInt = stoi(entradaUsuario);
+                switch (entradaUsuarioInt)
+                {
+                case 1:
+                    interacao.menuLoginAmd();
+                    break;
+                
+                case 2:
+                    interacao.menuCadastroAdm();
+                    break;
+                case 3:
+                    return;
+                    break;
+                }
+                break;
+            } 
+            catch (const runtime_error& e) {
+                cout << e.what() << endl;
             }
+        }
 
     }
 
-    void login(){
+    void menuLoginAmd(){
 
         Administrador administrador;
 
@@ -360,58 +400,77 @@ struct Menu {
              << "                                               \n" 
              << "                    LOGIN                      \n" 
              << "_______________________________________________\n\n";
-            cout << "NOME DE USUARIO: ";
-            cin >> administrador.nomeUsuario;
-            cout << "SENHA: ";
-            cin >> administrador.senha;
-            try {
-                validar.loginAdiministrador(administrador);
-                cout << "Administrador conectado com sucesso!";
-            } catch (const runtime_error& e) {
-                cout << e.what();
-            }
+        cout << "NOME DE USUARIO: ";
+        cin >> administrador.nomeUsuario;
+        cout << "SENHA: ";
+        cin >> administrador.senha;
+        try {
+            validar.loginAdiministrador(administrador);
+            cout << "Administrador conectado com sucesso!";
+        } catch (const runtime_error& e) {
+            cout << e.what() << endl;
+        }
     }
 
-    void cadastro(){
+    void menuCadastroAdm(){
 
         Administrador administrador;
+        Interacao interacao;
         string confSenha;
 
         cout << "_______________________________________________\n"
              << "                                               \n" 
              << "                  CADASTRAR                    \n"
              << "_______________________________________________\n\n";
-            cout << "LOGIN: ";
-            cin >> administrador.nomeUsuario;
-            cout << "SENHA: ";
-            cin >> administrador.senha;
+        cout << "LOGIN: ";
+        cin >> administrador.nomeUsuario;
+        cout << "SENHA: ";
+        cin >> administrador.senha;
 
-            try {
-                validar.cadastrarAdministrador(administrador, confSenha);
-                cout << "Administrador cadastrado com sucesso!";
-            } catch (const runtime_error& e) {
-                cout << e.what();
-            } 
-
-
+        try {
+            validar.cadastrarAdministrador(administrador, confSenha);
+            cout << "Administrador cadastrado com sucesso!";
+            interacao.menuLoginAmd();
+        } catch (const runtime_error& e) {
+            cout << e.what() << endl;
+        } 
     }
-    
-    void produtos(){
+
+    void menuGerenciarProdutos() {
         cout << "_______________________________________________\n" 
              << "                                               \n" 
-             << "                  PRODUTOS                     \n" 
-             << "_______________________________________________\n\n"
-             << left << setw(9) << "ID" << setw(25) << "   NOME" << setw(8) << "QTD" << setw(15) << "VALOR" << endl;
-
-        
-        cout << "_______________________________________________\n"
-             << "                                               \n"
-             << "          1| Adicionar produto ao carrinho     \n"
-             << "                                               \n"
-             << "          2| Finalizar compra                  \n"
-             << "                                               \n"
-             << "          3| Menu principal                    \n"
+             << "              GERENCIAR ESTOQUE                \n" 
+             << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "             1| Atualizar produto              \n" 
+             << "                                               \n" 
+             << "             2| Cadastrar produto              \n" 
+             << "                                               \n" 
+             << "             3| Remover produto                \n" 
+             << "                                               \n" 
              << "_______________________________________________\n\n";
+    }
+    
+    void menuProdutos(){
+        cout << "_________________________________________________\n" 
+             << "                                                 \n" 
+             << "                    PRODUTOS                     \n" 
+             << "_________________________________________________\n\n"
+             << left << setw(11) << "ID" << setw(25) << "NOME" << setw(8) << "QUANT" << setw(15) << "VALOR" << endl;
+        
+        vector<Produto> produtos = estoque.listarProdutos();
+        for (Produto produto : produtos) {
+            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
+        }
+        
+        cout << "_________________________________________________\n"
+             << "                                                 \n"
+             << "            1| Adicionar produto ao carrinho     \n"
+             << "                                                 \n"
+             << "            2| Finalizar compra                  \n"
+             << "                                                 \n"
+             << "            3| Menu principal                    \n"
+             << "_________________________________________________\n\n";
     }
     
     void metodoPagamento() {
