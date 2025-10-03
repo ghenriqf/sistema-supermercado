@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
-#include <optional>
+#include <vector>
 
 
 using namespace std;
@@ -150,47 +150,40 @@ struct Estoque {
         }
     }
 
-    void listarProdutos(string nomeArquivo) {
-        ifstream arquivo(nomeArquivo);
+    vector<Produto> listarProdutos() {
+        ifstream arquivo(nomeArquivoEstoque);
         string linha;
+        vector<Produto> produtos;
 
-        if (arquivo.is_open()) {
-            while (getline(arquivo, linha)) {
-                stringstream ss(linha);
-                string palavra;
-
-                int coluna = 0;
-                while (getline(ss, palavra, ',')) {
-                    switch (coluna) {
-                    case 0:
-                        cout << left << setw(9) << palavra;
-                        coluna++;
-                        break;
-                    case 1:
-                        cout << left << setw(25) << palavra;
-                        coluna++;
-                        break;
-                    case 2:
-                        cout << left << setw(8) << palavra;
-                        coluna++;
-                        break;
-                    case 3:
-                        cout << "R$";
-                        cout << left << setw(15) << palavra;
-                        break;
-                    }
-                }
-
-                cout << endl;
-            }
+        if (!arquivo.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
         }
-        else {
-            throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+        
+        while (getline(arquivo, linha)) {
+            stringstream ss(linha);
+            Produto produto;
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            getline(ss, produto.nomeProduto, ',');
+
+            getline(ss, campo, ',');
+            produto.quantidadeProduto = stof(campo);
+
+            getline(ss, campo, ',');
+            produto.valorProduto = stof(campo);
+
+            produtos.push_back(produto);
+           
         }
+        
+        
         arquivo.close();
+        return produtos;
     }
 };
-
 
 struct Validacoes {
 
@@ -231,7 +224,7 @@ struct Validacoes {
         } else if (administrador.senha != confSenha) {
             throw runtime_error("ERRO: As senhas nao coincidem!");
 
-        } else if (administrador.senha.length() <= 1) {
+        } else if (administrador.senha.length() <= 2) {
             throw runtime_error("ERRO: Senha invalida!");
         } else {
             adm.cadastrar(administrador);
@@ -250,8 +243,6 @@ struct Validacoes {
         }
 
     }
-
-    
 };
 
 int main() {
