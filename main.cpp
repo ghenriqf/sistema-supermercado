@@ -279,7 +279,18 @@ struct Validacoes {
         else if (admBusca.senha != administrador.senha) {
             throw runtime_error("ERRO: Senha invalida!");
         }
+    }
 
+    void removerProduto (bool confirmar, int id) {
+        Produto produto = estoque.buscarProdutoPorId(id);
+
+        if (!confirmar) {
+            throw runtime_error("Informe o id novamente!");
+        } else if (produto.nomeProduto.empty()) {
+            throw runtime_error("ERRO: Produto nao encontrado!");
+        } else {
+            estoque.removerProduto(id);
+        }
     }
 };
 
