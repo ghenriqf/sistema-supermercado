@@ -70,82 +70,17 @@ struct Administrador {
 };
 
 struct Estoque {
-
-    Produto buscarProdutoPorId(int id) {
-        ifstream estoque(nomeArquivoEstoque);
-
-        if (!estoque.is_open()) {
-            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
-        }
-
-        string linha;
-        Produto produto;
-
-        while (getline(estoque, linha)) {
-            stringstream ss(linha);
-
-            string campo;
-
-            getline(ss, campo, ',');
-            produto.id = stoi(campo);
-
-            if (produto.id == id) {
-                getline(ss, produto.nomeProduto, ',');
-
-                getline(ss, campo, ',');
-                produto.quantidadeProduto = stof(campo);
-
-                getline(ss, campo, ',');
-                produto.valorProduto = stof(campo);
-
-                return produto;
-            }
-        }
-
-        return Produto{};
-        estoque.close();
-    }
-
-    void atualizarProduto(Produto atualizado) {
-
-        ofstream temp("../temp.csv");
-        ifstream arquivo(nomeArquivoEstoque);
-
-        if (!arquivo.is_open() || !temp.is_open()) {
-            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
-        }
-
-        string linha;
-
-        while (getline(arquivo, linha)) {
-            string id;
-
-            stringstream ss(linha);
-            getline(ss, id, ',');
-
-            if (id == to_string(atualizado.id)) {
-                temp << atualizado.id << ',' << atualizado.nomeProduto << ',' << atualizado.quantidadeProduto << ',' << atualizado.valorProduto << endl;
-            }
-            else {
-                temp << linha << endl;
-            }
-        }
-
-        arquivo.close();
-        temp.close();
-
-        remove(nomeArquivoEstoque.c_str());
-        rename("../temp.csv", nomeArquivoEstoque.c_str());
-    }
-
+    
     void cadastrarProduto(Produto produto) {
         ofstream arquivo(nomeArquivoEstoque, ios::app);
 
         if (arquivo.is_open()) {
             arquivo << produto.id << ',' << produto.nomeProduto << ',' << produto.quantidadeProduto << ',' << produto.valorProduto << "\n";
+            arquivo.close();
         }
         else {
             throw runtime_error("ERRO: Nao foi possivel abrir o arquivo!");
+            arquivo.close();
         }
     }
 
@@ -181,6 +116,105 @@ struct Estoque {
         arquivo.close();
         return produtos;
     }
+
+    void atualizarProduto(Produto atualizado) {
+
+        ofstream temp("../temp.csv");
+        ifstream arquivo(nomeArquivoEstoque);
+
+        if (!arquivo.is_open() || !temp.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+
+        while (getline(arquivo, linha)) {
+            string id;
+
+            stringstream ss(linha);
+            getline(ss, id, ',');
+
+            if (id == to_string(atualizado.id)) {
+                temp << atualizado.id << ',' << atualizado.nomeProduto << ',' << atualizado.quantidadeProduto << ',' << atualizado.valorProduto << endl;
+            }
+            else {
+                temp << linha << endl;
+            }
+        }
+
+        arquivo.close();
+        temp.close();
+
+        remove(nomeArquivoEstoque.c_str());
+        rename("../temp.csv", nomeArquivoEstoque.c_str());
+    }
+
+    void removerProduto(int id) {
+        ofstream temp("../temp.csv");
+        ifstream arquivo(nomeArquivoEstoque);
+
+        if (!arquivo.is_open() || !temp.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+
+        while (getline(arquivo, linha)) {
+            string campo;
+
+            stringstream ss(linha);
+            getline(ss, campo, ',');
+
+            if (to_string(id) == campo) {
+                continue;
+            }
+            else {
+                temp << linha << endl;
+            }
+        }
+
+        arquivo.close();
+        temp.close();
+
+        remove(nomeArquivoEstoque.c_str());
+        rename("../temp.csv", nomeArquivoEstoque.c_str());
+    }
+
+    Produto buscarProdutoPorId(int id) {
+        ifstream estoque(nomeArquivoEstoque);
+
+        if (!estoque.is_open()) {
+            throw runtime_error("ERRO: Nao foi possível abrir o arquivo!");
+        }
+
+        string linha;
+        Produto produto;
+
+        while (getline(estoque, linha)) {
+            stringstream ss(linha);
+
+            string campo;
+
+            getline(ss, campo, ',');
+            produto.id = stoi(campo);
+
+            if (produto.id == id) {
+                getline(ss, produto.nomeProduto, ',');
+
+                getline(ss, campo, ',');
+                produto.quantidadeProduto = stof(campo);
+
+                getline(ss, campo, ',');
+                produto.valorProduto = stof(campo);
+
+                return produto;
+            }
+        }
+
+        estoque.close();
+        return Produto{};
+    }
+
 };
 
 struct Validacoes {
