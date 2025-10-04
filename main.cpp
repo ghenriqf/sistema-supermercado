@@ -452,6 +452,9 @@ struct Interacao {
     }
 
     void menuGerenciarProdutos() {
+        
+        string entradaUsuario;
+        Interacao interacao;
 
         cout << "_______________________________________________\n" 
              << "                                               \n" 
@@ -465,9 +468,63 @@ struct Interacao {
              << "             3| Remover produto                \n" 
              << "                                               \n" 
              << "_______________________________________________\n\n";
+        
+        while (true) {
+            cout  << "ESCOLHA A OPCAO: ";
+            try {
+                cin >> entradaUsuario;
+                validar.opcoesMenu(entradaUsuario);
+                system("cls");
+
+                int entradaUsuarioInt = stoi(entradaUsuario);
+                switch (entradaUsuarioInt)
+                {
+                case 1:
+                    interacao.manuAtualizarProduto();
+                    break;
+                
+                case 2:
+                    interacao.menuCadastrarProduto();
+                    break;
+                case 3:
+                    interacao.menuRemoverProduto();
+                    break;
+                }
+                break;
+            } 
+            catch (const runtime_error& e) {
+                cout << e.what() << endl;
+            }
+        }
+    }
+
+
+    void manuAtualizarProduto() {
+        cout << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "              ATUALIZAR PRODUTO                \n" 
+             << "_______________________________________________\n";
+
+    }
+
+    void menuCadastrarProduto() {
+         cout << "_______________________________________________\n" 
+             << "                                                \n" 
+             << "               CADASTRAR PRODUTO                \n" 
+             << "________________________________________________\n";
+    }
+
+    void menuRemoverProduto() {
+        cout << "________________________________________________\n" 
+             << "                                                \n" 
+             << "                REMOVER PRODUTO                 \n" 
+             << "________________________________________________\n";
     }
     
     void menuProdutos(){
+
+        string entradaUsuario;
+
         cout << "_________________________________________________\n" 
              << "                                                 \n" 
              << "                    PRODUTOS                     \n" 
@@ -487,6 +544,31 @@ struct Interacao {
              << "                                                 \n"
              << "            3| Menu principal                    \n"
              << "_________________________________________________\n\n";
+
+        while (true) {
+            cout  << "ESCOLHA A OPCAO: ";
+            try {
+                cin >> entradaUsuario;
+                validar.opcoesMenu(entradaUsuario);
+                system("cls");
+
+                int entradaUsuarioInt = stoi(entradaUsuario);
+                switch (entradaUsuarioInt)
+                {
+                case 1:
+                    break;
+                
+                case 2:
+                    break;
+                case 3:
+                    break;
+                }
+                break;
+            } 
+            catch (const runtime_error& e) {
+                cout << e.what() << endl;
+            }
+        }
     }
     
     void metodoPagamento() {
