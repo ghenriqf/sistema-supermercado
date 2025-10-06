@@ -1,16 +1,15 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <iomanip>
-#include <cstdlib>
-#include <ctime>
-#include <string>
-#include <vector>
+#include <iostream> // Biblioteca padrão
+#include <fstream> // Manipulação de arquivos
+#include <sstream> // Maniulação de strings
+#include <string> // Utilização de strings
+#include <iomanip> // Formatação do design
+#include <cstdlib> // Funções utilitarias de C
+#include <ctime> // Tempo real
+#include <vector> // Vetores dinamicos
 
 using namespace std;
 
-string nomeArquivoEstoque = "../produtos.csv";
+string nomeArquivoEstoque = "../produtos.csv"; // CSV = Comma Separated Values
 string nomeArquivoAdms = "../adms.csv";
 
 struct Produto {
@@ -19,8 +18,8 @@ struct Produto {
     float quantidadeProduto;
     float valorProduto;
 
-    Produto () {
-         id = rand();
+    Produto () { // Metodo construtor = Chamado imediatamente ao iniciar a struct!
+         id = rand(); 
     }
 };
 
@@ -30,7 +29,7 @@ struct Administrador {
     string senha;
     
     void cadastrar(Administrador adm) {
-        ofstream arquivo("../adms.csv", ios::app);
+        ofstream arquivo("../adms.csv", ios::app); // IOS:APP ---> "Append" ao arquivo existente
 
         if (arquivo.is_open()) {
             arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
@@ -38,6 +37,8 @@ struct Administrador {
         }
         else {
             throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
+            // função throw = Lança uma exceção de erro a ser tratado
+            // runtime_error = Trata de erros genericos sem explodir o programa!
         }
     }
 
@@ -51,11 +52,11 @@ struct Administrador {
 
         string linha;
 
-        while (getline(estoque, linha)) {
-            stringstream ss(linha);
+        while (getline(estoque, linha)) { // Pega a linha do arquivo e passa para a variavel "linha"
+            stringstream ss(linha); // transforma essa linha em uma variavel "stringstream" (suscetivel a entradas e saidas do usuario)
 
             string campo;
-            getline(ss, campo, ',');
+            getline(ss, campo, ','); // Divide a string por virgula!
 
             if (nomeUsuario == campo) {
                 adm.nomeUsuario = campo;
@@ -65,7 +66,7 @@ struct Administrador {
             }
         }
 
-        return Administrador{};
+        return Administrador{}; // struct vazia
     }
 };
 
@@ -321,7 +322,7 @@ struct Interacao {
             try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario);
-                system("cls");
+                system("cls"); // Limpa a tela!
 
                 int entradaUsuarioInt = stoi(entradaUsuario);
                 switch (entradaUsuarioInt)
@@ -339,7 +340,7 @@ struct Interacao {
                 }
                 break;
             } 
-            catch (const runtime_error& e) {
+            catch (const runtime_error& e) { 
                 cout << e.what() << endl;
             }
         }
@@ -606,7 +607,7 @@ struct Interacao {
 
 
 int main() {
-    srand(time(0));
+    srand(time(0)); // Valor aleatorio baseado no tempo local atual!
 
     Interacao interacao;
 
