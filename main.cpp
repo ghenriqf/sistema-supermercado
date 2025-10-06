@@ -6,6 +6,7 @@
 #include <cstdlib> // Funções utilitarias de C
 #include <ctime> // Tempo real
 #include <vector> // Vetores dinamicos
+#include <limits>
 
 using namespace std;
 
@@ -254,7 +255,10 @@ struct Validacoes {
     void cadastrarAdministrador(Administrador administrador, string confSenha) {
         Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
 
-        if(!admBusca.nomeUsuario.empty()) {
+        if (administrador.nomeUsuario.find(' ') != string::npos) {
+                    throw runtime_error("ERRO: Nome do usuario nao pode conter espacos!");
+        }
+        else if(!admBusca.nomeUsuario.empty()) {
             throw runtime_error("ERRO: Nome de usuario ja cadastrado!");
         }
         else if (administrador.nomeUsuario.length() <= 2 || administrador.nomeUsuario.length() > 25) {
@@ -404,23 +408,24 @@ struct Interacao {
     void menuLoginAmd(){
 
         Administrador administrador;
-        Interacao interacao;
 
+        
+        cout << "_______________________________________________\n" 
+             << "                                               \n" 
+             << "                    LOGIN                      \n" 
+             << "_______________________________________________\n\n";
         while (true)  {
-            cout << "_______________________________________________\n" 
-                 << "                                               \n" 
-                 << "                    LOGIN                      \n" 
-                 << "_______________________________________________\n\n";
             try {
                 cout << "NOME DE USUARIO: ";
-                cin >> administrador.nomeUsuario;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, administrador.nomeUsuario);
 
                 cout << "SENHA: ";
                 cin >> administrador.senha;
 
                 validar.loginAdiministrador(administrador);
                 system("cls");
-                interacao.menuGerenciarProdutos();
+                menuGerenciarProdutos();
                 break;
 
             } catch (const runtime_error& e) {
@@ -432,7 +437,6 @@ struct Interacao {
     void menuCadastroAdm(){
 
         Administrador administrador;
-        Interacao interacao;
         string confSenha;
 
         while (true){
@@ -442,7 +446,8 @@ struct Interacao {
                  << "_______________________________________________\n\n";
             try {
                 cout << "NOME DE USUARIO: ";
-                cin >> administrador.nomeUsuario;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, administrador.nomeUsuario);
 
                 cout << "SENHA: ";
                 cin >> administrador.senha;
@@ -453,8 +458,11 @@ struct Interacao {
                 validar.cadastrarAdministrador(administrador, confSenha);
                 cout << "Administrador cadastrado com sucesso!" << endl;
 
-                interacao.menuLoginAmd();
+                menuLoginAmd();
+                system("cls");
+                break;
             } catch (const runtime_error& e) {
+                system("cls");
                 cout << e.what() << endl;
             } 
         }
@@ -463,7 +471,6 @@ struct Interacao {
     void menuGerenciarProdutos() {
         
         string entradaUsuario;
-        Interacao interacao;
 
         cout << "_______________________________________________\n" 
              << "                                               \n" 
@@ -489,14 +496,14 @@ struct Interacao {
                 switch (entradaUsuarioInt)
                 {
                 case 1:
-                    interacao.manuAtualizarProduto();
+                    manuAtualizarProduto();
                     break;
                 
                 case 2:
-                    interacao.menuCadastrarProduto();
+                    menuCadastrarProduto();
                     break;
                 case 3:
-                    interacao.menuRemoverProduto();
+                    menuRemoverProduto();
                     break;
                 }
                 break;
@@ -538,27 +545,6 @@ struct Interacao {
              << "               CADASTRAR PRODUTO                \n" 
              << "________________________________________________\n";
 
-        while (true) {
-            try
-            {
-                cout << "INFORME O NOME DO PRODUTO: ";
-                cin >> produto.nomeProduto;
-
-                cout << "INFORME A QUANTIDADE: ";
-                cin >> quantidade;
-                
-                cout << "INFORME O VALOR: ";
-                cin >> produto.valorProduto;
-
-                validar.cadastrarProduto(produto);
-                cout << "Produto cadastrado com sucesso!";
-                return;
-            }
-            catch(const exception& e) {
-                cerr << e.what() << endl;
-            }
-            
-        }      
     }
 
     void menuRemoverProduto() {
