@@ -335,7 +335,7 @@ struct Interacao {
                     break;
                 case 3:
                     cout << "Obrigado por tudo!";
-                    break;
+                    exit(0);
                 }
                 break;
             } 
