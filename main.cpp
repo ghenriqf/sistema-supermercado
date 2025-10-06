@@ -85,7 +85,7 @@ struct Estoque {
         }
     }
 
-    vector<Produto> listarProdutos() {
+    vector<Produto> listarProdutos() { // Vetor dinamico!
         ifstream arquivo(nomeArquivoEstoque);
         string linha;
         vector<Produto> produtos;
@@ -100,18 +100,18 @@ struct Estoque {
             string campo;
 
             getline(ss, campo, ',');
-            produto.id = stoi(campo);
+            produto.id = stoi(campo); // STOI --> String to int
 
             getline(ss, produto.nomeProduto, ',');
 
             getline(ss, campo, ',');
-            produto.quantidadeProduto = stof(campo);
+            produto.quantidadeProduto = stof(campo); // STOF --> String to float
 
             getline(ss, campo, ',');
             produto.valorProduto = stof(campo);
 
-            produtos.push_back(produto);
-           
+            produtos.push_back(produto); // Adiciona os valores como um novo elemento do vetor
+
         }
         
         arquivo.close();
@@ -120,7 +120,7 @@ struct Estoque {
 
     void atualizarProduto(Produto atualizado) {
 
-        ofstream temp("../temp.csv");
+        ofstream temp("../temp.csv"); // Novo arquivo
         ifstream arquivo(nomeArquivoEstoque);
 
         if (!arquivo.is_open() || !temp.is_open()) {
@@ -139,14 +139,14 @@ struct Estoque {
                 temp << atualizado.id << ',' << atualizado.nomeProduto << ',' << atualizado.quantidadeProduto << ',' << atualizado.valorProduto << endl;
             }
             else {
-                temp << linha << endl;
+                temp << linha << endl; 
             }
         }
 
         arquivo.close();
         temp.close();
 
-        remove(nomeArquivoEstoque.c_str());
+        remove(nomeArquivoEstoque.c_str()); // c_str --> String com funcionalidades de C
         rename("../temp.csv", nomeArquivoEstoque.c_str());
     }
 
@@ -232,7 +232,7 @@ struct Validacoes {
     void cadastrarProduto(Produto produto) {
         vector <Produto> produtos = estoque.listarProdutos();
 
-        for (Produto prod : produtos) {
+        for (Produto prod : produtos) { // Lista "produtos" um por um
             if (prod.nomeProduto == produto.nomeProduto ) {
                 throw runtime_error("ERRO: Produto ja cadastrado!");
             }
@@ -319,7 +319,7 @@ struct Interacao {
         
         while (true) {
             cout  << "ESCOLHA A OPCAO: ";
-            try {
+            try { // Trata o escopo como uma area de perigo, usando catch para trata-lo, caso algo dê errado
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario);
                 system("cls"); // Limpa a tela!
@@ -336,12 +336,12 @@ struct Interacao {
                     break;
                 case 3:
                     cout << "Obrigado por tudo!";
-                    exit(0);
+                    exit(0); 
                 }
                 break;
             } 
-            catch (const runtime_error& e) { 
-                cout << e.what() << endl;
+            catch (const runtime_error& e) { // <-- Tipo de variavel que a função "what" utiliza
+                cout << e.what() << endl; // Retorna de onde veio o erro, resetando o programa
             }
         }
     } 
@@ -381,7 +381,7 @@ struct Interacao {
                     interacao.menuCadastroAdm();
                     break;
                 case 3:
-                    return;
+                    return; // Fecha a função
                     break;
                 }
                 break;
@@ -471,7 +471,7 @@ struct Interacao {
              << "_______________________________________________\n\n";
         
         while (true) {
-            cout  << "ESCOLHA A OPCAO: ";
+            cout << "ESCOLHA A OPCAO: ";
             try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario);
@@ -501,6 +501,10 @@ struct Interacao {
 
 
     void manuAtualizarProduto() {
+
+        string entradaUsuario;
+        Produto atualizado;
+
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "              ATUALIZAR PRODUTO                \n" 
@@ -525,6 +529,7 @@ struct Interacao {
     void menuProdutos(){
 
         string entradaUsuario;
+        Interacao interacao;
 
         cout << "_________________________________________________\n" 
              << "                                                 \n" 
@@ -562,6 +567,7 @@ struct Interacao {
                 case 2:
                     break;
                 case 3:
+                    return;
                     break;
                 }
                 break;
