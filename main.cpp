@@ -295,6 +295,14 @@ struct Validacoes {
     }
 };
 
+void listarProdutos(Estoque& estoque) {
+
+    vector<Produto> produtos = estoque.listarProdutos();
+        for (Produto produto : produtos) {
+            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
+        }
+}
+
 struct Interacao {
 
     Validacoes validar;
@@ -501,25 +509,78 @@ struct Interacao {
 
 
     void manuAtualizarProduto() {
+
+        string entradaUsuario;
+
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "              ATUALIZAR PRODUTO                \n" 
              << "_______________________________________________\n";
+        vector<Produto> produtos = estoque.listarProdutos();
+        for (Produto produto : produtos) {
+            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
+        }
+        
+        
 
     }
 
     void menuCadastrarProduto() {
+
+        string entradaUsuario;
+        Produto produto;
+        string quantidade;
+        string valor;
+
          cout << "_______________________________________________\n" 
              << "                                                \n" 
              << "               CADASTRAR PRODUTO                \n" 
              << "________________________________________________\n";
+
+        while (true) {
+            try
+            {
+                cout << "INFORME O NOME DO PRODUTO: ";
+                cin >> produto.nomeProduto;
+
+                cout << "INFORME A QUANTIDADE: ";
+                cin >> quantidade;
+                
+                cout << "INFORME O VALOR: ";
+                cin >> produto.valorProduto;
+
+                validar.cadastrarProduto(produto);
+                cout << "Produto cadastrado com sucesso!";
+                return;
+            }
+            catch(const exception& e) {
+                cerr << e.what() << endl;
+            }
+            
+        }      
     }
 
     void menuRemoverProduto() {
+
+        string id;
+        Produto produto;
+
         cout << "________________________________________________\n" 
              << "                                                \n" 
              << "                REMOVER PRODUTO                 \n" 
              << "________________________________________________\n";
+        listarProdutos(estoque);
+
+        cout << "INFORME O ID DO PRODUTO QUE DESEJA REMOVER: ";
+        cin >> id;
+
+        int inteiroId = stoi(id);
+        estoque.buscarProdutoPorId(inteiroId);
+        
+
+        cout << "TEM CERTEZA QUE DESEJA REMOVER ";
+
+
     }
     
     void menuProdutos(){
