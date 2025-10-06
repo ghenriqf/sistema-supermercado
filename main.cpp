@@ -212,11 +212,9 @@ struct Estoque {
                 return produto;
             }
         }
-
         estoque.close();
         return Produto{};
     }
-
 };
 
 struct Validacoes {
@@ -224,9 +222,15 @@ struct Validacoes {
     Estoque estoque;
     Administrador adm;
     
-    void opcoesMenu(string entrada) {
-        if (entrada != "1" && entrada != "2" && entrada != "3" ) {
-            throw runtime_error("ERRO: Entrada invalida!");
+    void opcoesMenu(string entrada, int opcoes) {
+        if (opcoes == 3) {
+            if (entrada != "1" && entrada != "2" && entrada != "3" ) {
+                throw runtime_error("ERRO: Entrada invalida!");
+        } else if (opcoes == 4){
+            if (entrada != "1" && entrada != "2" && entrada != "3" && entrada != "4") {
+                throw runtime_error("ERRO: Entrada invalida!");
+            }
+        }
         }
     }
 
@@ -297,6 +301,14 @@ struct Validacoes {
             estoque.removerProduto(id);
         }
     }
+
+    void acharProduto (int id) {
+        Produto produto = estoque.buscarProdutoPorId(id);
+
+        if (produto.nomeProduto.empty()) {
+            throw runtime_error("ERRO: Produto nao encontrado!");
+        }
+    }
 };
 
 void listarProdutos(Estoque& estoque) {
@@ -333,7 +345,7 @@ struct Interacao {
             cout  << "ESCOLHA A OPCAO: ";
             try { // Trata o escopo como uma area de perigo, usando catch para trata-lo, caso algo dê errado
                 cin >> entradaUsuario;
-                validar.opcoesMenu(entradaUsuario);
+                validar.opcoesMenu(entradaUsuario, 3);
                 system("cls"); // Limpa a tela!
 
                 int entradaUsuarioInt = stoi(entradaUsuario);
@@ -379,7 +391,7 @@ struct Interacao {
             cout  << "ESCOLHA A OPCAO: ";
             try {
                 cin >> entradaUsuario;
-                validar.opcoesMenu(entradaUsuario);
+                validar.opcoesMenu(entradaUsuario, 3);
                 system("cls");
 
                 int entradaUsuarioInt = stoi(entradaUsuario);
@@ -483,13 +495,14 @@ struct Interacao {
              << "                                               \n" 
              << "             3| Remover produto                \n" 
              << "                                               \n" 
+             << "             4| Voltar                         \n" 
              << "_______________________________________________\n\n";
         
         while (true) {
             cout << "ESCOLHA A OPCAO: ";
             try {
                 cin >> entradaUsuario;
-                validar.opcoesMenu(entradaUsuario);
+                validar.opcoesMenu(entradaUsuario, 4);
                 system("cls");
 
                 int entradaUsuarioInt = stoi(entradaUsuario);
@@ -504,6 +517,9 @@ struct Interacao {
                     break;
                 case 3:
                     menuRemoverProduto();
+                    break;
+                case 4:
+                    return;
                     break;
                 }
                 break;
@@ -590,27 +606,34 @@ struct Interacao {
              << "                                                 \n"
              << "            1| Adicionar produto ao carrinho     \n"
              << "                                                 \n"
-             << "            2| Finalizar compra                  \n"
+             << "            2| Ver carrinho                      \n"
              << "                                                 \n"
-             << "            3| Menu principal                    \n"
+             << "            3| Finalizar compra                  \n"
+             << "                                                 \n"
+             << "            4| Menu principal                    \n"
              << "_________________________________________________\n\n";
 
         while (true) {
             cout  << "ESCOLHA A OPCAO: ";
             try {
                 cin >> entradaUsuario;
-                validar.opcoesMenu(entradaUsuario);
+                validar.opcoesMenu(entradaUsuario, 4);
                 system("cls");
-
                 int entradaUsuarioInt = stoi(entradaUsuario);
                 switch (entradaUsuarioInt)
                 {
                 case 1:
+                    adicionarCarrinho();
                     break;
                 
                 case 2:
+                    verCarrinho();
                     break;
+
                 case 3:
+                    metodoPagamento();
+                    break;
+                case 4:
                     return;
                     break;
                 }
@@ -621,8 +644,19 @@ struct Interacao {
             }
         }
     }
+
+    void adicionarCarrinho() {
+
+    }
+
+    void verCarrinho() {
+
+    }
     
     void metodoPagamento() {
+
+        string entradaUsuario;
+
         cout << "_______________________________________________\n"
              << "                                               \n"
              << "              METODO DE PAGAMENTO              \n"
@@ -634,6 +668,32 @@ struct Interacao {
              << "                                               \n"
              << "                 3| Voltar                     \n"
              << "_______________________________________________\n\n";   
+
+        while (true) {
+            cout << "ESCOLHA UMA OPCAO: ";
+            
+            try {
+                cin >> entradaUsuario;
+                validar.opcoesMenu(entradaUsuario, 3);
+                int entradaUsuarioInt = stoi(entradaUsuario);
+
+                switch (entradaUsuarioInt) {
+                case 1:
+                    cout << "OBRIGADO PELA COMPRA!" << endl;
+                    break;
+                
+                case 2:
+                    cartao();
+                    break;
+
+                case 3:
+                    return;
+                    break;
+                }
+            } catch(const runtime_error& e) {
+                cout << e.what() << endl;
+            }
+        }
     }
     
     void cartao(){
@@ -660,7 +720,7 @@ int main() {
     srand(time(0)); // Valor aleatorio baseado no tempo local atual!
 
     Interacao interacao;
-
+    
     while (true) {
         interacao.menuPrincipal();
     }
