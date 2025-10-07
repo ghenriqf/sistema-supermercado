@@ -225,10 +225,10 @@ struct Validacoes {
     void opcoesMenu(string entrada, int opcoes) {
         if (opcoes == 3) {
             if (entrada != "1" && entrada != "2" && entrada != "3" ) {
-                throw runtime_error("ERRO: Entrada invalida!");
+                throw invalid_argument("ERRO: Entrada invalida!");
         } else if (opcoes == 4){
             if (entrada != "1" && entrada != "2" && entrada != "3" && entrada != "4") {
-                throw runtime_error("ERRO: Entrada invalida!");
+                throw invalid_argument("ERRO: Entrada invalida!");
             }
         }
         }
@@ -253,7 +253,20 @@ struct Validacoes {
         } else {
             estoque.cadastrarProduto(produto);
         }
+    }
 
+    void validarAtualizarProduto(Produto atualizado) {
+        if (atualizado.nomeProduto.length() <= 2 || atualizado.nomeProduto.length() > 25) {
+            throw runtime_error("ERRO: Nome do produto invalido!");
+
+        } else if (atualizado.quantidadeProduto <= 0) {
+            throw runtime_error("ERRO: Quantidade invalida!");
+
+        } else if (atualizado.valorProduto <= 0) {
+            throw runtime_error("ERRO: Valor invalido!");
+        } else {
+            estoque.atualizarProduto(atualizado);
+        }
     }
 
     void cadastrarAdministrador(Administrador administrador, string confSenha) {
@@ -302,27 +315,36 @@ struct Validacoes {
         }
     }
 
-    void acharProduto (int id) {
-        Produto produto = estoque.buscarProdutoPorId(id);
+    Produto buscarProduto (string id) {
+        Produto produto;
 
-        if (produto.nomeProduto.empty()) {
-            throw runtime_error("ERRO: Produto nao encontrado!");
+        try {
+            int idInteiro = stoi(id);
+            produto = estoque.buscarProdutoPorId(idInteiro);
+
+            if (produto.nomeProduto.empty()) {
+                throw runtime_error("ERRO: Produto nao encontrado!");
+            }
+        } catch (const invalid_argument& e) {
+            throw invalid_argument("ERRO: Id invalido!");
         }
+
+        return produto;
     }
 };
-
-void listarProdutos(Estoque& estoque) {
-
-    vector<Produto> produtos = estoque.listarProdutos();
-        for (Produto produto : produtos) {
-            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
-        }
-}
 
 struct Interacao {
 
     Validacoes validar;
     Estoque estoque;
+
+    void listarProdutos(Estoque& estoque) {
+
+    vector<Produto> produtos = estoque.listarProdutos();
+        for (Produto produto : produtos) {
+            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
+        }
+    }
 
     void menuPrincipal() {
         string entradaUsuario;
@@ -364,7 +386,7 @@ struct Interacao {
                 }
                 break;
             } 
-            catch (const runtime_error& e) { // <-- Tipo de variavel que a função "what" utiliza
+            catch (const invalid_argument& e) { // <-- Tipo de variavel que a função "what" utiliza
                 cout << e.what() << endl; // Retorna de onde veio o erro, resetando o programa
             }
         }
@@ -410,7 +432,7 @@ struct Interacao {
                 }
                 break;
             } 
-            catch (const runtime_error& e) {
+            catch (const invalid_argument& e) {
                 cout << e.what() << endl;
             }
         }
@@ -420,7 +442,6 @@ struct Interacao {
     void menuLoginAmd(){
 
         Administrador administrador;
-
         
         cout << "_______________________________________________\n" 
              << "                                               \n" 
@@ -509,7 +530,7 @@ struct Interacao {
                 switch (entradaUsuarioInt)
                 {
                 case 1:
-                    manuAtualizarProduto();
+                    menuAtualizarProduto();
                     break;
                 
                 case 2:
@@ -524,29 +545,120 @@ struct Interacao {
                 }
                 break;
             } 
-            catch (const runtime_error& e) {
+            catch (const invalid_argument& e) {
                 cout << e.what() << endl;
             }
         }
     }
 
 
-    void manuAtualizarProduto() {
+    void menuAtualizarProduto() {
 
         string entradaUsuario;
-        Produto atualizado;
+        Produto produto;
 
-        cout << "_______________________________________________\n" 
-             << "                                               \n" 
-             << "              ATUALIZAR PRODUTO                \n" 
-             << "_______________________________________________\n";
-        vector<Produto> produtos = estoque.listarProdutos();
-        for (Produto produto : produtos) {
-            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
+        cout << "________________________________________________\n" 
+            << "                                                \n" 
+            << "               ATUALIZAR PRODUTO                \n" 
+            << "________________________________________________\n";
+        listarProdutos(estoque);
+        cout << "________________________________________________\n\n";
+
+        while (true) {
+            try {
+                cout << "INFORME O ID DO PRODUTO (DIGITE 1 PARA SAIR): ";
+                cin >> entradaUsuario;
+                if (entradaUsuario == "1") {
+                    return;
+                }
+                produto = validar.buscarProduto(entradaUsuario);
+                system("cls");
+                break;
+            } catch (const exception& e) {
+                cerr << e.what() << endl;
+            }
         }
-        
-        
 
+        Produto atualizado = produto;
+
+        while (true) {
+            cout << left << setw(25) << "1|NOME" 
+                << setw(12) << "2|QUANT" 
+                << setw(15) << "3|VALOR" 
+                << setw(10) << "0|SAIR" << endl;
+
+            cout << left << setw(25) << atualizado.nomeProduto 
+                << setw(12) << atualizado.quantidadeProduto 
+                << setw(15) << atualizado.valorProduto 
+                << endl;
+
+            cout << "________________________________________________\n\n";
+            cout << "O QUE DESEJA ALTERAR (0 PARA SAIR): ";
+
+            cin >> entradaUsuario;
+
+            if (entradaUsuario == "0") break; // sai do menu de atualização
+
+            int entradaUsuarioInt;
+            try {
+                entradaUsuarioInt = stoi(entradaUsuario);
+                validar.opcoesMenu(entradaUsuario, 3); // valida se é 1, 2 ou 3
+                system("cls");
+            } catch (const exception& e) {
+                cerr << e.what() << endl;
+                continue; // volta para escolher a opção
+            }
+
+            switch (entradaUsuarioInt) {
+                case 1:
+                    cout << "INFORME O NOVO NOME: ";
+                    cin >> atualizado.nomeProduto;
+                    system("cls");
+                    cout << "NOME ATUALIZADO COM SUCESSO!" << endl;
+                    break;
+
+                case 2:
+                    while (true) {
+                        cout << "INFORME A NOVA QUANTIDADE: ";
+                        string quantidade;
+                        cin >> quantidade;
+                        try {
+                            float quantidadeFloat = stof(quantidade);
+                            atualizado.quantidadeProduto = quantidadeFloat;
+                            system("cls");
+                            cout << "QUANTIDADE ATUALIZADA COM SUCESSO!" << endl;
+                            break;
+                        } catch (const invalid_argument&) {
+                            cerr << "ERRO: Entrada invalida" << endl;
+                        }
+                    }
+                    break;
+
+                case 3:
+                    while (true) {
+                        cout << "INFORME O NOVO VALOR: ";
+                        string valor;
+                        cin >> valor;
+                        try {
+                            float valorFloat = stof(valor);
+                            atualizado.valorProduto = valorFloat;
+                            system("cls");
+                            cout << "VALOR ATUALIZADO COM SUCESSO!" << endl;
+                            break;
+                        } catch (const invalid_argument&) {
+                            cerr << "ERRO: Entrada invalida" << endl;
+                        }
+                    }
+                    break;
+            }
+
+            // tenta validar o produto atualizado
+            try {
+                validar.validarAtualizarProduto(atualizado);
+            } catch(const exception& e) {
+                cerr << e.what() << endl;
+            }
+        }
     }
 
     void menuCadastrarProduto() {
@@ -596,11 +708,7 @@ struct Interacao {
              << "                    PRODUTOS                     \n" 
              << "_________________________________________________\n\n"
              << left << setw(11) << "ID" << setw(25) << "NOME" << setw(8) << "QUANT" << setw(15) << "VALOR" << endl;
-        
-        vector<Produto> produtos = estoque.listarProdutos();
-        for (Produto produto : produtos) {
-            cout << left << setw(11) << produto.id << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << setw(15) << produto.valorProduto << endl;
-        }
+        listarProdutos(estoque);
         
         cout << "_________________________________________________\n"
              << "                                                 \n"
@@ -715,13 +823,12 @@ struct Interacao {
     
 };
 
-
 int main() {
     srand(time(0)); // Valor aleatorio baseado no tempo local atual!
 
     Interacao interacao;
     
     while (true) {
-        interacao.menuPrincipal();
+        interacao.menuAtualizarProduto();
     }
 }
