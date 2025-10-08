@@ -10,7 +10,6 @@
 
 using namespace std;
 
-
 // Variaveis globais referentes aos nomes dos arquivos csv - CSV = Comma Separated Values
 string nomeArquivoEstoque = "../produtos.csv";
 string nomeArquivoAdms = "../adms.csv";
@@ -487,7 +486,7 @@ struct Interacao {
                 switch (entradaUsuarioInt)
                 {
                 case 1:
-                    menuLoginAmd();
+                    menuLoginAdm();
                     break;
                 
                 case 2:
@@ -506,7 +505,7 @@ struct Interacao {
 
     }
 
-    void menuLoginAmd(){
+    void menuLoginAdm(){
 
         Administrador administrador;
         
@@ -553,7 +552,7 @@ struct Interacao {
                 validar.cadastrarAdministrador(administrador, confSenha);
                 cout << "Administrador cadastrado com sucesso!" << endl;
 
-                menuLoginAmd();
+                menuLoginAdm();
                 system("cls");
                 break;
             } catch (const runtime_error& e) {
@@ -831,29 +830,30 @@ struct Interacao {
 
         string entradaUsuario;
 
-        cout << "_________________________________________________\n" 
-             << "                                                 \n" 
-             << "                    PRODUTOS                     \n" 
-             << "_________________________________________________\n\n"
-             << left << setw(11) << "ID" << setw(25) << "NOME" << setw(8) << "QUANT" << setw(15) << "VALOR" << endl;
-        listarProdutos(estoque);
         
-        cout << "_________________________________________________\n"
-             << "                                                 \n"
-             << "         1) Adicionar produto ao carrinho       \n"
-             << "                                                 \n"
-             << "         2) Remover produto do carrinho          \n"
-             << "                                                 \n"
-             << "         3) Ver carrinho                         \n"
-             << "                                                 \n"
-             << "         4) Finalizar compra                     \n"
-             << "                                                 \n"
-             << "         5) Menu principal                       \n"
-             << "_________________________________________________\n\n";
-
         int entradaUsuarioInt;
-
+        
         while (true) {
+            cout << "_________________________________________________\n" 
+                 << "                                                 \n" 
+                 << "                    PRODUTOS                     \n" 
+                 << "_________________________________________________\n\n"
+                 << left << setw(11) << "ID" << setw(25) << "NOME" << setw(8) << "QUANT" << setw(15) << "VALOR" << endl;
+            listarProdutos(estoque);
+            
+            cout << "_________________________________________________\n"
+                 << "                                                 \n"
+                 << "         1) Adicionar produto ao carrinho       \n"
+                 << "                                                 \n"
+                 << "         2) Remover produto do carrinho          \n"
+                 << "                                                 \n"
+                 << "         3) Ver carrinho                         \n"
+                 << "                                                 \n"
+                 << "         4) Finalizar compra                     \n"
+                 << "                                                 \n"
+                 << "         5) Menu principal                       \n"
+                 << "_________________________________________________\n\n";
+
             try {
                 cout  << "Escolha a opcao: ";
                 cin >> entradaUsuario;
@@ -862,6 +862,7 @@ struct Interacao {
                 entradaUsuarioInt = stoi(entradaUsuario);
             } 
             catch (const invalid_argument& e) {
+                system("cls");
                 cout << e.what() << endl;
                 continue;
             }
@@ -881,7 +882,8 @@ struct Interacao {
                             cin >> quantidade;
                             
                             validar.adicionarProdutoCarrinho(produto, carrinho, quantidade);
-                            
+
+                            system("cls");
                             cout << "Produto adicionado ao carrinho!" << endl;
                             break;
                         }
@@ -896,7 +898,7 @@ struct Interacao {
     
                     while (true) {
                         for (Produto produto : carrinho.produtosCarrinho) {
-                        cout << left << "PRODUTO: " << setw(25) << produto.nomeProduto << "QUANT: " << setw(8) << produto.quantidadeProduto << endl;
+                        cout << left << setw(25) << produto.nomeProduto << setw(8) << produto.quantidadeProduto << endl;
                         }
     
                         cout << "Informe o ID do produto para remover: ";
@@ -917,17 +919,29 @@ struct Interacao {
                 }
     
                 case 3:
-                    cout << "__________________CARRINHO______________________\n"
-                         << "                                                \n"
-                         << " PRODUTO    |    QUANTIDADE                     \n";
-                         
-                    for (Produto produto : carrinho.produtosCarrinho) {
-                        cout << produto.nomeProduto << "        " << produto.quantidadeProduto << endl;
-                    }
+                    system("cls");
+
+                    cout << "_______________________CARRINHO_________________________\n"
+                         << "PRODUTO                 |QUANT       |VALOR             \n";
                     
+                    for (Produto produto : carrinho.produtosCarrinho) {
+                        cout << left << setw(25) << produto.nomeProduto << setw(13) << produto.quantidadeProduto << "R$" << produto.valorProduto * produto.quantidadeProduto << endl;
+                    }
+
+                    cout << "________________________________________________________\n";
+                    cout << "Valor total da compra: R$" << carrinho.valorCompra << endl;
+                    
+                    while (entradaUsuario != "0") {
+                        cout << "Digite 0 para voltar: ";
+                        cin >> entradaUsuario;
+                    }
+
+                    system("cls");
+                    break;
                     break;
     
                 case 4:
+                    system("cls");
                     menuFinalizarCompra();
                     break;
                 
@@ -966,11 +980,13 @@ struct Interacao {
 
                 switch (entradaUsuarioInt) {
                 case 1:
+                    system("cls");
                     cout << "Obrigado pela compra!" << endl;
+                    return;
                     break;
                 
                 case 2:
-                    cartao();
+                    menuPagamentoCartao();
                     break;
 
                 case 3:
@@ -983,21 +999,22 @@ struct Interacao {
         }
     }
     
-    void cartao(){
-        float valor = 5342.14;
+    void menuPagamentoCartao(){
+        float valor = carrinho.valorCompra;
+
         cout << "_______________________________________________\n"
              << "                        |                      \n"
              << "      PARCELAMENTO      |        VALOR         \n"
              << "________________________|______________________\n"
-             << "|                       |                      \n";
+             << "                        |                      \n";
              for(int i = 2; i <= 12; i++) {
                 if (i < 4) {
-                    cout << "| " << right << setw(2) << i << left << setw(21) << "x sem juros"  << "|   R$ "  << left << setw(15) << valor/i << " |" << endl;
+                    cout << right << setw(2) << i << left << setw(22) << "x sem juros"  << "|   R$ "  << left << setw(15) << valor/i << endl;
                 } else {
-                    cout << "| " << right << setw(2) << i << left << setw(21) << "x com 10% juros" << "|   R$ " << left << setw(15) << valor/i + (valor * 0.10)  << " |" << endl;
+                    cout << right << setw(2) << i << left << setw(22) << "x com 10% juros" << "|   R$ " << left << setw(15) << valor/i + (valor * 0.10) << endl;
                 }
              }
-        cout << "_______________________|_______________________\n\n";
+        cout << "________________________|_______________________\n\n";
     }
     
 };
@@ -1010,5 +1027,6 @@ int main() {
     while (true) {
         system("cls");
         interacao.menuPrincipal();
+        break;
     }
 }
