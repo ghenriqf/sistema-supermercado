@@ -26,6 +26,31 @@ struct Produto {
     }
 };
 
+struct Carrinho {
+
+    vector<Produto> produtosCarrinho;
+    float valorCompra;
+
+
+    void adicionarProduto(Produto produto) {
+        produtosCarrinho.push_back(produto);
+
+        valorCompra += (produto.valorProduto * produto.quantidadeProduto);
+    }
+
+    void removerProduto(int id) {
+        int i = 0;
+        for (Produto produto : produtosCarrinho) {
+            if (produto.id == id) {
+                produtosCarrinho.erase(produtosCarrinho.begin() + i);
+                return;
+            }
+            i++;
+        }
+    }
+
+};
+
 struct Administrador {
 
     string nomeUsuario;
@@ -726,14 +751,16 @@ struct Interacao {
 
                 produto = validar.buscarProduto(entradaUsuario);
 
+                cout << "Tem certeza que deseja remover: " << produto.nomeProduto << endl;
+                cout << "1)Sim" << endl << "2)Nao" << endl;
+
                 while (true) {
-                    cout << "TEM CERTEZA QUE DESEJA REMOVER: " << produto.nomeProduto << endl;
-                    cout << "1)Sim" << endl << "2)Nao" << endl << ":";
+                    cout << ":";
                     cin >> entradaUsuario;
     
                     if (entradaUsuario == "1") {
                         validar.removerProduto(produto.id);
-                        cout << "PRODUTO REMOVIDO COM SUCESSO!";
+                        cout << "Produto removido com sucesso!" << endl;
                         break;
                     } else if (entradaUsuario == "2") {
                         system("cls");
@@ -881,6 +908,6 @@ int main() {
     Interacao interacao;
     
     while (true) {
-        interacao.menuPrincipal();
+        interacao.menuRemoverProduto();
     }
 }
