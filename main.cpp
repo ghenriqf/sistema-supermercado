@@ -10,7 +10,9 @@
 
 using namespace std;
 
-string nomeArquivoEstoque = "../produtos.csv"; // CSV = Comma Separated Values
+
+// Variaveis globais referentes aos nomes dos arquivos csv - CSV = Comma Separated Values
+string nomeArquivoEstoque = "../produtos.csv";
 string nomeArquivoAdms = "../adms.csv";
 
 struct Produto {
@@ -19,7 +21,7 @@ struct Produto {
     float quantidadeProduto;
     float valorProduto;
 
-    Produto () { // Metodo construtor = Chamado imediatamente ao iniciar a struct!
+    Produto () { // Metodo construtor
          id = rand(); 
     }
 };
@@ -30,7 +32,7 @@ struct Administrador {
     string senha;
     
     void cadastrar(Administrador adm) {
-        ofstream arquivo("../adms.csv", ios::app); // IOS:APP ---> "Append" ao arquivo existente
+        ofstream arquivo(nomeArquivoAdms, ios::app); // IOS:APP - "Append" ao arquivo existente
 
         if (arquivo.is_open()) {
             arquivo << adm.nomeUsuario << ',' << adm.senha << "\n";
@@ -38,8 +40,6 @@ struct Administrador {
         }
         else {
             throw runtime_error("ERRO: Nao foi possivel abrir o arquivo");
-            // função throw = Lança uma exceção de erro a ser tratado
-            // runtime_error = Trata de erros genericos sem explodir o programa!
         }
     }
 
@@ -53,11 +53,11 @@ struct Administrador {
 
         string linha;
 
-        while (getline(estoque, linha)) { // Pega a linha do arquivo e passa para a variavel "linha"
-            stringstream ss(linha); // transforma essa linha em uma variavel "stringstream" (suscetivel a entradas e saidas do usuario)
+        while (getline(estoque, linha)) { 
+            stringstream ss(linha);
 
             string campo;
-            getline(ss, campo, ','); // Divide a string por virgula!
+            getline(ss, campo, ',');
 
             if (nomeUsuario == campo) {
                 adm.nomeUsuario = campo;
@@ -86,7 +86,7 @@ struct Estoque {
         }
     }
 
-    vector<Produto> listarProdutos() { // Vetor dinamico!
+    vector<Produto> listarProdutos() {
         ifstream arquivo(nomeArquivoEstoque);
         string linha;
         vector<Produto> produtos;
@@ -101,17 +101,17 @@ struct Estoque {
             string campo;
 
             getline(ss, campo, ',');
-            produto.id = stoi(campo); // STOI --> String to int
+            produto.id = stoi(campo); // stoi(string) - String to int
 
             getline(ss, produto.nomeProduto, ',');
 
             getline(ss, campo, ',');
-            produto.quantidadeProduto = stof(campo); // STOF --> String to float
+            produto.quantidadeProduto = stof(campo); // stof(string) - String to float
 
             getline(ss, campo, ',');
             produto.valorProduto = stof(campo);
 
-            produtos.push_back(produto); // Adiciona os valores como um novo elemento do vetor
+            produtos.push_back(produto); // adiciona valores ao vetor
 
         }
         
@@ -121,7 +121,7 @@ struct Estoque {
 
     void atualizarProduto(Produto atualizado) {
 
-        ofstream temp("../temp.csv"); // Novo arquivo
+        ofstream temp("../temp.csv"); // passando nome de arquivo temporario
         ifstream arquivo(nomeArquivoEstoque);
 
         if (!arquivo.is_open() || !temp.is_open()) {
@@ -147,7 +147,7 @@ struct Estoque {
         arquivo.close();
         temp.close();
 
-        remove(nomeArquivoEstoque.c_str()); // c_str --> String com funcionalidades de C
+        remove(nomeArquivoEstoque.c_str()); // c_str - String com funcionalidades de C
         rename("../temp.csv", nomeArquivoEstoque.c_str());
     }
 
@@ -223,14 +223,11 @@ struct Validacoes {
     Administrador adm;
     
     void opcoesMenu(string entrada, int opcoes) {
-        if (opcoes == 3) {
-            if (entrada != "1" && entrada != "2" && entrada != "3" ) {
-                throw invalid_argument("ERRO: Entrada invalida!");
-        } else if (opcoes == 4){
-            if (entrada != "1" && entrada != "2" && entrada != "3" && entrada != "4") {
-                throw invalid_argument("ERRO: Entrada invalida!");
-            }
-        }
+        if (opcoes == 3 && entrada != "1" && entrada != "2" && entrada != "3") {
+            throw invalid_argument("ERRO: Entrada invalida!");
+        } 
+        else if (opcoes == 4 && entrada != "1" && entrada != "2" && entrada != "3" && entrada != "4") {
+            throw invalid_argument("ERRO: Entrada invalida!");
         }
     }
 
@@ -273,7 +270,7 @@ struct Validacoes {
         Administrador admBusca = adm.buscarAdministrador(administrador.nomeUsuario);
 
         if (administrador.nomeUsuario.find(' ') != string::npos) {
-                    throw runtime_error("ERRO: Nome do usuario nao pode conter espacos!");
+            throw runtime_error("ERRO: Nome do usuario nao pode conter espacos!");
         }
         else if(!admBusca.nomeUsuario.empty()) {
             throw runtime_error("ERRO: Nome de usuario ja cadastrado!");
@@ -346,37 +343,36 @@ struct Interacao {
 
     void menuPrincipal() {
         string entradaUsuario;
-        Interacao interacao;
         
         cout << "_______________________________________________\n"
              << "                                               \n"
              << "                MENU PRINCIPAL                 \n"
              << "_______________________________________________\n"
              << "                                               \n"
-             << "               1| Administrador                \n"
+             << "               1) Administrador                \n"
              << "                                               \n"
-             << "               2| Cliente                      \n"
+             << "               2) Cliente                      \n"
              << "                                               \n"
-             << "               3| Sair do Programa             \n"
+             << "               3) Sair do Programa             \n"
              << "                                               \n"
              << "_______________________________________________\n";
         
         while (true) {
-            cout  << "ESCOLHA A OPCAO: ";
-            try { // Trata o escopo como uma area de perigo, usando catch para trata-lo, caso algo dê errado
+            cout  << "Escolha a opcao: ";
+            try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario, 3);
-                system("cls"); // Limpa a tela!
+                system("cls"); // limpa o terminal
 
                 int entradaUsuarioInt = stoi(entradaUsuario);
                 switch (entradaUsuarioInt)
                 {
                 case 1:
-                    interacao.menuAdministrador();
+                    menuAdministrador();
                     break;
                 
                 case 2:
-                    interacao.menuProdutos();
+                    menuProdutos();
                     break;
                 case 3:
                     cout << "Obrigado por tudo!";
@@ -384,8 +380,8 @@ struct Interacao {
                 }
                 break;
             } 
-            catch (const invalid_argument& e) { // <-- Tipo de variavel que a função "what" utiliza
-                cout << e.what() << endl; // Retorna de onde veio o erro, resetando o programa
+            catch (const invalid_argument& e) {
+                cout << e.what() << endl; // retorna de onde veio o erro, resetando o programa
             }
         }
     } 
@@ -393,22 +389,21 @@ struct Interacao {
     void menuAdministrador(){
 
         string entradaUsuario;
-        Interacao interacao;
 
         cout << "_______________________________________________\n" 
              << "                                               \n" 
              << "                ADMINISTRADOR                  \n" 
              << "_______________________________________________\n" 
              << "                                               \n" 
-             << "               1| Login                        \n" 
+             << "               1) Login                        \n" 
              << "                                               \n" 
-             << "               2| Cadastrar                    \n" 
+             << "               2) Cadastrar                    \n" 
              << "                                               \n" 
-             << "               3| Voltar                       \n" 
+             << "               3) Menu principal               \n" 
              << "                                               \n" 
              << "_______________________________________________\n\n";
          while (true) {
-            cout  << "ESCOLHA A OPCAO: ";
+            cout  << "Ecolha a opcao: ";
             try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario, 3);
@@ -418,14 +413,14 @@ struct Interacao {
                 switch (entradaUsuarioInt)
                 {
                 case 1:
-                    interacao.menuLoginAmd();
+                    menuLoginAmd();
                     break;
                 
                 case 2:
-                    interacao.menuCadastroAdm();
+                    menuCadastroAdm();
                     break;
                 case 3:
-                    return; // Fecha a função
+                    return;
                     break;
                 }
                 break;
@@ -441,17 +436,14 @@ struct Interacao {
 
         Administrador administrador;
         
-        cout << "_______________________________________________\n" 
-             << "                                               \n" 
-             << "                    LOGIN                      \n" 
-             << "_______________________________________________\n\n";
+        cout << "____________________LOGIN______________________\n"; 
         while (true)  {
             try {
-                cout << "NOME DE USUARIO: ";
+                cout << "Nome de usuario: ";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, administrador.nomeUsuario);
 
-                cout << "SENHA: ";
+                cout << "Senha: ";
                 cin >> administrador.senha;
 
                 validar.loginAdiministrador(administrador);
@@ -471,19 +463,17 @@ struct Interacao {
         string confSenha;
 
         while (true){
-            cout << "_______________________________________________\n"
-                 << "                                               \n" 
-                 << "                  CADASTRAR                    \n"
-                 << "_______________________________________________\n\n";
+            cout << "___________________CADASTRAR ____________________\n";
+               
             try {
-                cout << "NOME DE USUARIO: ";
+                cout << "Nome de usuario: ";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, administrador.nomeUsuario);
 
-                cout << "SENHA: ";
+                cout << "Senha: ";
                 cin >> administrador.senha;
 
-                cout << "CONFIRME A SENHA: ";
+                cout << "Confirme a senha: ";
                 cin >> confSenha;
 
                 validar.cadastrarAdministrador(administrador, confSenha);
@@ -508,17 +498,17 @@ struct Interacao {
              << "              GERENCIAR ESTOQUE                \n" 
              << "_______________________________________________\n" 
              << "                                               \n" 
-             << "             1| Atualizar produto              \n" 
+             << "             1) Atualizar produto              \n" 
              << "                                               \n" 
-             << "             2| Cadastrar produto              \n" 
+             << "             2) Cadastrar produto              \n" 
              << "                                               \n" 
-             << "             3| Remover produto                \n" 
+             << "             3) Remover produto                \n" 
              << "                                               \n" 
-             << "             4| Voltar                         \n" 
+             << "             4) Menu principal                 \n" 
              << "_______________________________________________\n\n";
         
         while (true) {
-            cout << "ESCOLHA A OPCAO: ";
+            cout << "Escolha a opcao: ";
             try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario, 4);
@@ -555,22 +545,20 @@ struct Interacao {
         string entradaUsuario;
         Produto produto;
 
-        cout << "_______________________________________________\n" 
-            << "                                                \n" 
-            << "                ATUALIZAR PRODUTO               \n" 
-            << "________________________________________________\n";
+        cout << "_______________ATUALIZAR PRODUTO________________\n";
         listarProdutos(estoque);
         cout << "________________________________________________\n"
-             << "             DIGITE 999 PARA SAIR               \n"
-             << "________________________________________________\n\n";
+             << " - Digite o ID do produto para remover          \n"
+             << " - Digite 0 para voltar para o menu principal   \n"
+             << "________________________________________________\n";
 
         while (true) {
             try {
-                cout << "INFORME O ID DO PRODUTO: ";
+                cout << ": ";
                 cin >> entradaUsuario;
-                if (entradaUsuario == "999") {
-                    return;
-                }
+
+                if (entradaUsuario == "0") return;
+
                 produto = validar.buscarProduto(entradaUsuario);
                 system("cls");
                 break;
@@ -583,9 +571,9 @@ struct Interacao {
 
         while (true) {
             cout << "________________________________________________\n";
-            cout << left << setw(25) << "1|NOME" 
-                << setw(12) << "2|QUANT" 
-                << setw(15) << "3|VALOR" 
+            cout << left << setw(25) << "1)NOME" 
+                << setw(12) << "2)QUANT" 
+                << setw(15) << "3)VALOR" 
                 << endl;
 
             cout << left << setw(25) << atualizado.nomeProduto 
@@ -594,13 +582,14 @@ struct Interacao {
                 << endl;
 
             cout << "________________________________________________\n"
-                 << "             DIGITE 999 PARA SAIR               \n"
-                 << "________________________________________________\n";
-            cout << "O QUE DESEJA ALTERAR: ";
+                 << " - Digite o que deseja alterar no produto       \n"
+                 << " - Digite 0 para voltar                         \n"
+                 << "________________________________________________\n\n";
+            cout << ": ";
 
             cin >> entradaUsuario;
 
-            if (entradaUsuario == "999") break; // sai do menu de atualização
+            if (entradaUsuario == "0") break; // sai do menu de atualização
 
             int entradaUsuarioInt;
             try {
@@ -614,22 +603,22 @@ struct Interacao {
 
             switch (entradaUsuarioInt) {
                 case 1:
-                    cout << "INFORME O NOVO NOME: ";
+                    cout << "Informe o novo nome: ";
                     cin >> atualizado.nomeProduto;
+                    cout << "Nome atualizado com sucesso!" << endl;
                     system("cls");
-                    cout << "NOME ATUALIZADO COM SUCESSO!" << endl;
                     break;
 
                 case 2:
                     while (true) {
-                        cout << "INFORME A NOVA QUANTIDADE: ";
+                        cout << "Informe a nova quantidade: ";
                         string quantidade;
                         cin >> quantidade;
                         try {
                             float quantidadeFloat = stof(quantidade);
                             atualizado.quantidadeProduto = quantidadeFloat;
+                            cout << "Quantidade atualizada com sucesso!" << endl;
                             system("cls");
-                            cout << "QUANTIDADE ATUALIZADA COM SUCESSO!" << endl;
                             break;
                         } catch (const invalid_argument&) {
                             cerr << "ERRO: Entrada invalida" << endl;
@@ -639,14 +628,14 @@ struct Interacao {
 
                 case 3:
                     while (true) {
-                        cout << "INFORME O NOVO VALOR: ";
+                        cout << "Informe o novo valor: ";
                         string valor;
                         cin >> valor;
                         try {
                             float valorFloat = stof(valor);
                             atualizado.valorProduto = valorFloat;
+                            cout << "Valor atualizado com sucesso!" << endl;
                             system("cls");
-                            cout << "VALOR ATUALIZADO COM SUCESSO!" << endl;
                             break;
                         } catch (const invalid_argument&) {
                             cerr << "ERRO: Entrada invalida" << endl;
@@ -666,16 +655,53 @@ struct Interacao {
 
     void menuCadastrarProduto() {
 
-        string entradaUsuario;
         Produto produto;
         string quantidade;
         string valor;
 
-         cout << "_______________________________________________\n" 
-             << "                                                \n" 
-             << "               CADASTRAR PRODUTO                \n" 
-             << "________________________________________________\n";
+        cout << "_______________CADASTRAR PRODUTO________________\n";
 
+        while (true) {
+            try {
+                cout << "Informe o nome do produto: ";
+                cin >> produto.nomeProduto;
+
+                while (true) {
+                    cout << "Informe a quantidade: ";
+                    cin >> quantidade;
+
+                    try {
+                        float quantidadeFloat = stof(quantidade);
+                        produto.quantidadeProduto = quantidadeFloat;
+                        break;
+                    } catch(const invalid_argument& e) {
+                        cerr << "ERRO: Entrada invalida" << '\n';
+                    }
+                    
+                }
+                while (true) {
+                    cout << "Informe o valor: ";
+                    cin >> valor;
+
+                    try {
+                        float valorFloat = stof(valor);
+                        produto.valorProduto = valorFloat;
+                        break;
+                    } catch(const invalid_argument& e) {
+                        cerr << "ERRO: Entrada invalida" << '\n';
+                    }
+                    
+                }
+                validar.cadastrarProduto(produto);
+                system("cls");
+                cout << "Produto cadastrado com sucesso!" << endl;
+                return;
+            }
+            catch(const runtime_error& e) {
+                cerr << e.what() << endl;
+            } 
+        }
+        
     }
 
     void menuRemoverProduto() {
@@ -684,21 +710,19 @@ struct Interacao {
         string entradaUsuario;
         
         while (true) {
-            cout << "________________________________________________\n" 
-                 << "                                                \n" 
-                 << "                REMOVER PRODUTO                 \n" 
-                 << "________________________________________________\n";
+            cout << "_________________REMOVER PRODUTO________________\n";
             listarProdutos(estoque);
             cout << "________________________________________________\n"
-                 << "              DIGITE 0 PARA SAIR                \n"
+                 << " - Digite o ID do produto para remover          \n"
+                 << " - Digite 0 para voltar                         \n"
                  << "________________________________________________\n\n";
 
             try {
 
-                cout << "INFORME O ID:";
+                cout << ":";
                 cin >> entradaUsuario;
 
-                if (entradaUsuario == "0") return;
+                if (entradaUsuario == "0") menuAdministrador();
 
                 produto = validar.buscarProduto(entradaUsuario);
 
@@ -730,7 +754,6 @@ struct Interacao {
     void menuProdutos(){
 
         string entradaUsuario;
-        Interacao interacao;
 
         cout << "_________________________________________________\n" 
              << "                                                 \n" 
@@ -741,17 +764,17 @@ struct Interacao {
         
         cout << "_________________________________________________\n"
              << "                                                 \n"
-             << "            1| Adicionar produto ao carrinho     \n"
+             << "            1) Adicionar produto ao carrinho     \n"
              << "                                                 \n"
-             << "            2| Ver carrinho                      \n"
+             << "            2) Ver carrinho                      \n"
              << "                                                 \n"
-             << "            3| Finalizar compra                  \n"
+             << "            3) Finalizar compra                  \n"
              << "                                                 \n"
-             << "            4| Menu principal                    \n"
+             << "            4) Menu principal                    \n"
              << "_________________________________________________\n\n";
 
         while (true) {
-            cout  << "ESCOLHA A OPCAO: ";
+            cout  << "Escolha a opcao: ";
             try {
                 cin >> entradaUsuario;
                 validar.opcoesMenu(entradaUsuario, 4);
@@ -796,18 +819,18 @@ struct Interacao {
 
         cout << "_______________________________________________\n"
              << "                                               \n"
-             << "              METODO DE PAGAMENTO              \n"
+             << "              METODOS DE PAGAMENTO             \n"
              << "_______________________________________________\n"
              << "                                               \n"
-             << "                 1| A vista                    \n"
+             << "                 1) A vista                    \n"
              << "                                               \n"
-             << "                 2| Cartao                     \n"
+             << "                 2) Cartao                     \n"
              << "                                               \n"
-             << "                 3| Voltar                     \n"
+             << "                 3) Voltar                     \n"
              << "_______________________________________________\n\n";   
 
         while (true) {
-            cout << "ESCOLHA UMA OPCAO: ";
+            cout << "Escolha a opcao: ";
             
             try {
                 cin >> entradaUsuario;
@@ -816,7 +839,7 @@ struct Interacao {
 
                 switch (entradaUsuarioInt) {
                 case 1:
-                    cout << "OBRIGADO PELA COMPRA!" << endl;
+                    cout << "Obrigado pela compra!" << endl;
                     break;
                 
                 case 2:
@@ -858,6 +881,6 @@ int main() {
     Interacao interacao;
     
     while (true) {
-        interacao.menuAtualizarProduto();
+        interacao.menuPrincipal();
     }
 }
