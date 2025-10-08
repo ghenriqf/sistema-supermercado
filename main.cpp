@@ -386,7 +386,7 @@ struct Validacoes {
     }
 
     void removerProdutoCarrinho (Produto produto, Carrinho &carr) {
-        bool estaNoCarrinho;
+        bool estaNoCarrinho = false;
 
         for (Produto prod : carr.produtosCarrinho) {
             if (prod.id == produto.id) estaNoCarrinho = true; 
@@ -860,80 +860,83 @@ struct Interacao {
 
                 validar.opcoesMenu(entradaUsuario, 5);
                 entradaUsuarioInt = stoi(entradaUsuario);
-
-                break;
             } 
             catch (const invalid_argument& e) {
                 cout << e.what() << endl;
                 continue;
             }
-        }
-            
-        switch (entradaUsuarioInt) {
 
-            case 1:
-                while (true) {
-                    string id, quantidade;
-
-                    try {
-                        cout << "Informe o ID do produto para adicionar: ";
-                        cin >> id;
-                        Produto produto = validar.buscarProduto(id);
-
-                        cout << "Informe a quantidade: ";
-                        cin >> quantidade;
-                        
-                        validar.adicionarProdutoCarrinho(produto, carrinho, quantidade);
-                        
-                        system("cls");
-                        cout << "Produto adicionado ao carrinho!" << endl;
-
-                        break;
-
+            switch (entradaUsuarioInt) {
+    
+                case 1:
+                    while (true) {
+                        string id, quantidade;
+    
+                        try {
+                            cout << "Informe o ID do produto para adicionar: ";
+                            cin >> id;
+                            Produto produto = validar.buscarProduto(id);
+    
+                            cout << "Informe a quantidade: ";
+                            cin >> quantidade;
+                            
+                            validar.adicionarProdutoCarrinho(produto, carrinho, quantidade);
+                            
+                            cout << "Produto adicionado ao carrinho!" << endl;
+                            break;
+                        }
+                        catch(const exception& e) {
+                            cerr << e.what() << endl;
+                        }
                     }
-                    catch(const exception& e) {
-                        cerr << e.what() << endl;
-                    }
-                }
-                break;
-            
-            case 2: {
-                string id;
-                cout << "Informe o ID do produto para remover: ";
-                cin >> id;
-                try {
-                    Produto produto = validar.buscarProduto(id);
-
-                    validar.removerProdutoCarrinho(produto, carrinho); // passa a referência
-
-                    system("cls");
-                    cout << "Produto removido do carrinho!" << endl;
-
-                } catch(const exception& e) {
-                    cerr << e.what() << endl;
-                }
-                break;
-            }
-
-            case 3:
-                cout << "__________________CARRINHO______________________\n"
-                     << "                                                \n"
-                     << " PRODUTO    |    QUANTIDADE                     \n";
-                     
-                for (Produto produto : carrinho.produtosCarrinho) {
-                    cout << produto.nomeProduto << "        " << produto.quantidadeProduto << endl;
-                }
+                    break;
                 
-                break;
-
-            case 4:
-                menuFinalizarCompra();
-                break;
-            
-            case 5:
-                return;
-                break;
+                case 2: {
+                    string id;
+    
+                    while (true) {
+                        for (Produto produto : carrinho.produtosCarrinho) {
+                        cout << left << "PRODUTO: " << setw(25) << produto.nomeProduto << "QUANT: " << setw(8) << produto.quantidadeProduto << endl;
+                        }
+    
+                        cout << "Informe o ID do produto para remover: ";
+                        cin >> id;
+    
+                        try {
+                            Produto produto = validar.buscarProduto(id);
+                            validar.removerProdutoCarrinho(produto, carrinho); // passa a referência
+        
+                            system("cls");
+                            cout << "Produto removido do carrinho!" << endl;
+                            break;
+                        } catch(const exception& e) {
+                            cerr << e.what() << endl;
+                        }
+                    }
+                    break;
+                }
+    
+                case 3:
+                    cout << "__________________CARRINHO______________________\n"
+                         << "                                                \n"
+                         << " PRODUTO    |    QUANTIDADE                     \n";
+                         
+                    for (Produto produto : carrinho.produtosCarrinho) {
+                        cout << produto.nomeProduto << "        " << produto.quantidadeProduto << endl;
+                    }
+                    
+                    break;
+    
+                case 4:
+                    menuFinalizarCompra();
+                    break;
+                
+                case 5:
+                    return;
+                    break;
+            }
         }
+            
         
     }
 
@@ -1005,6 +1008,7 @@ int main() {
     Interacao interacao;
     
     while (true) {
-        interacao.menuProdutos();
+        system("cls");
+        interacao.menuPrincipal();
     }
 }
