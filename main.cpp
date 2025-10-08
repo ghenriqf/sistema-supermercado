@@ -246,6 +246,7 @@ struct Validacoes {
 
     Estoque estoque;
     Administrador adm;
+    Carrinho carrinho;
     
     void opcoesMenu(string entrada, int opcoes) {
         if (opcoes == 3 && entrada != "1" && entrada != "2" && entrada != "3") {
@@ -277,7 +278,7 @@ struct Validacoes {
         }
     }
 
-    void validarAtualizarProduto(Produto atualizado) {
+    void atualizarProduto(Produto atualizado) {
         if (atualizado.nomeProduto.length() <= 2 || atualizado.nomeProduto.length() > 25) {
             throw runtime_error("ERRO: Nome do produto invalido!");
 
@@ -350,6 +351,34 @@ struct Validacoes {
         }
 
         return produto;
+    }
+
+    void adicionarProdutoCarrinho (Produto produto, Carrinho carr) {
+        bool estaNoCarrinho;
+
+        for (Produto prod : carr.produtosCarrinho) {
+            if (prod.id == produto.id) estaNoCarrinho = true; 
+        }
+
+        if(estaNoCarrinho) {
+            throw runtime_error("ERRO: Produto ja esta no carrinho!");
+        } else {
+            carr.adicionarProduto(produto);
+        }
+    }
+
+    void removerProdutoCarrinho (Produto produto, Carrinho carr) {
+        bool estaNoCarrinho;
+
+        for (Produto prod : carr.produtosCarrinho) {
+            if (prod.id == produto.id) estaNoCarrinho = true; 
+        }
+
+        if(!estaNoCarrinho) {
+            throw runtime_error("ERRO: Produto nao esta no carrinho!");
+        } else {
+            carr.removerProduto(produto.id);
+        }
     }
 };
 
@@ -671,7 +700,7 @@ struct Interacao {
 
             // tenta validar o produto atualizado
             try {
-                validar.validarAtualizarProduto(atualizado);
+                validar.atualizarProduto(atualizado);
             } catch(const exception& e) {
                 cerr << e.what() << endl;
             }
@@ -908,6 +937,6 @@ int main() {
     Interacao interacao;
     
     while (true) {
-        interacao.menuRemoverProduto();
+        interacao.menuPrincipal();
     }
 }
