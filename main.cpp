@@ -249,10 +249,15 @@ struct Validacoes {
     Carrinho carrinho;
     
     void opcoesMenu(string entrada, int opcoes) {
-        if (opcoes == 3 && entrada != "1" && entrada != "2" && entrada != "3") {
+        int entradaInt;
+
+        try {
+           entradaInt = stoi(entrada);
+        } catch (const invalid_argument& e) {
             throw invalid_argument("ERRO: Entrada invalida!");
-        } 
-        else if (opcoes == 4 && entrada != "1" && entrada != "2" && entrada != "3" && entrada != "4") {
+        }
+
+        if (entradaInt < 1 || entradaInt > opcoes) {
             throw invalid_argument("ERRO: Entrada invalida!");
         }
     }
@@ -353,25 +358,39 @@ struct Validacoes {
         return produto;
     }
 
-    void adicionarProdutoCarrinho (Produto produto, Carrinho carr) {
-        bool estaNoCarrinho;
+    void adicionarProdutoCarrinho (Produto &produto, Carrinho &carr, string quantidade) {
+        bool estaNoCarrinho = false;
+        float quantidadeFloat;
 
         for (Produto prod : carr.produtosCarrinho) {
-            if (prod.id == produto.id) estaNoCarrinho = true; 
+            if (prod.id == produto.id) estaNoCarrinho = true;
+            break; 
         }
 
         if(estaNoCarrinho) {
             throw runtime_error("ERRO: Produto ja esta no carrinho!");
+        };
+
+        try {
+            quantidadeFloat = stof(quantidade);
+        } catch (const invalid_argument& e) {
+            throw invalid_argument("ERRO: Entrada invalida!");
+        }
+
+        if (quantidadeFloat <= 0 || quantidadeFloat > produto.quantidadeProduto) {
+            throw runtime_error("ERRO: Quantidade insuficiente!");
         } else {
+            produto.quantidadeProduto = quantidadeFloat;
             carr.adicionarProduto(produto);
         }
     }
 
-    void removerProdutoCarrinho (Produto produto, Carrinho carr) {
+    void removerProdutoCarrinho (Produto produto, Carrinho &carr) {
         bool estaNoCarrinho;
 
         for (Produto prod : carr.produtosCarrinho) {
             if (prod.id == produto.id) estaNoCarrinho = true; 
+            break;
         }
 
         if(!estaNoCarrinho) {
@@ -386,6 +405,7 @@ struct Interacao {
 
     Validacoes validar;
     Estoque estoque;
+    Carrinho carrinho;
 
     void listarProdutos(Estoque& estoque) {
 
@@ -807,7 +827,7 @@ struct Interacao {
 
     }
     
-    void menuProdutos(){
+    void menuProdutos() {
 
         string entradaUsuario;
 
@@ -820,56 +840,104 @@ struct Interacao {
         
         cout << "_________________________________________________\n"
              << "                                                 \n"
-             << "            1) Adicionar produto ao carrinho     \n"
+             << "         1) Adicionar produto ao carrinho       \n"
              << "                                                 \n"
-             << "            2) Ver carrinho                      \n"
+             << "         2) Remover produto do carrinho          \n"
              << "                                                 \n"
-             << "            3) Finalizar compra                  \n"
+             << "         3) Ver carrinho                         \n"
              << "                                                 \n"
-             << "            4) Menu principal                    \n"
+             << "         4) Finalizar compra                     \n"
+             << "                                                 \n"
+             << "         5) Menu principal                       \n"
              << "_________________________________________________\n\n";
 
-        while (true) {
-            cout  << "Escolha a opcao: ";
-            try {
-                cin >> entradaUsuario;
-                validar.opcoesMenu(entradaUsuario, 4);
-                system("cls");
-                int entradaUsuarioInt = stoi(entradaUsuario);
-                switch (entradaUsuarioInt)
-                {
-                case 1:
-                    adicionarCarrinho();
-                    break;
-                
-                case 2:
-                    verCarrinho();
-                    break;
+        int entradaUsuarioInt;
 
-                case 3:
-                    metodoPagamento();
-                    break;
-                case 4:
-                    return;
-                    break;
-                }
+        while (true) {
+            try {
+                cout  << "Escolha a opcao: ";
+                cin >> entradaUsuario;
+
+                validar.opcoesMenu(entradaUsuario, 5);
+                entradaUsuarioInt = stoi(entradaUsuario);
+
                 break;
             } 
-            catch (const runtime_error& e) {
+            catch (const invalid_argument& e) {
                 cout << e.what() << endl;
+                continue;
             }
         }
+            
+        switch (entradaUsuarioInt) {
+
+            case 1:
+                while (true) {
+                    string id, quantidade;
+
+                    try {
+                        cout << "Informe o ID do produto para adicionar: ";
+                        cin >> id;
+                        Produto produto = validar.buscarProduto(id);
+
+                        cout << "Informe a quantidade: ";
+                        cin >> quantidade;
+                        
+                        validar.adicionarProdutoCarrinho(produto, carrinho, quantidade);
+                        
+                        system("cls");
+                        cout << "Produto adicionado ao carrinho!" << endl;
+
+                        break;
+
+                    }
+                    catch(const exception& e) {
+                        cerr << e.what() << endl;
+                    }
+                }
+                break;
+            
+            case 2: {
+                string id;
+                cout << "Informe o ID do produto para remover: ";
+                cin >> id;
+                try {
+                    Produto produto = validar.buscarProduto(id);
+
+                    validar.removerProdutoCarrinho(produto, carrinho); // passa a referência
+
+                    system("cls");
+                    cout << "Produto removido do carrinho!" << endl;
+
+                } catch(const exception& e) {
+                    cerr << e.what() << endl;
+                }
+                break;
+            }
+
+            case 3:
+                cout << "__________________CARRINHO______________________\n"
+                     << "                                                \n"
+                     << " PRODUTO    |    QUANTIDADE                     \n";
+                     
+                for (Produto produto : carrinho.produtosCarrinho) {
+                    cout << produto.nomeProduto << "        " << produto.quantidadeProduto << endl;
+                }
+                
+                break;
+
+            case 4:
+                menuFinalizarCompra();
+                break;
+            
+            case 5:
+                return;
+                break;
+        }
+        
     }
 
-    void adicionarCarrinho() {
-
-    }
-
-    void verCarrinho() {
-
-    }
-    
-    void metodoPagamento() {
+    void menuFinalizarCompra() {
 
         string entradaUsuario;
 
@@ -937,6 +1005,6 @@ int main() {
     Interacao interacao;
     
     while (true) {
-        interacao.menuPrincipal();
+        interacao.menuProdutos();
     }
 }
