@@ -303,12 +303,10 @@ struct Validacoes {
         }
     }
 
-    void removerProduto (bool confirmar, int id) {
+    void removerProduto (int id) {
         Produto produto = estoque.buscarProdutoPorId(id);
 
-        if (!confirmar) {
-            throw runtime_error("Informe o id novamente!");
-        } else if (produto.nomeProduto.empty()) {
+        if (produto.nomeProduto.empty()) {
             throw runtime_error("ERRO: Produto nao encontrado!");
         } else {
             estoque.removerProduto(id);
@@ -557,18 +555,20 @@ struct Interacao {
         string entradaUsuario;
         Produto produto;
 
-        cout << "________________________________________________\n" 
+        cout << "_______________________________________________\n" 
             << "                                                \n" 
-            << "               ATUALIZAR PRODUTO                \n" 
+            << "                ATUALIZAR PRODUTO               \n" 
             << "________________________________________________\n";
         listarProdutos(estoque);
-        cout << "________________________________________________\n\n";
+        cout << "________________________________________________\n"
+             << "             DIGITE 999 PARA SAIR               \n"
+             << "________________________________________________\n\n";
 
         while (true) {
             try {
-                cout << "INFORME O ID DO PRODUTO (DIGITE 1 PARA SAIR): ";
+                cout << "INFORME O ID DO PRODUTO: ";
                 cin >> entradaUsuario;
-                if (entradaUsuario == "1") {
+                if (entradaUsuario == "999") {
                     return;
                 }
                 produto = validar.buscarProduto(entradaUsuario);
@@ -582,22 +582,25 @@ struct Interacao {
         Produto atualizado = produto;
 
         while (true) {
+            cout << "________________________________________________\n";
             cout << left << setw(25) << "1|NOME" 
                 << setw(12) << "2|QUANT" 
                 << setw(15) << "3|VALOR" 
-                << setw(10) << "0|SAIR" << endl;
+                << endl;
 
             cout << left << setw(25) << atualizado.nomeProduto 
                 << setw(12) << atualizado.quantidadeProduto 
                 << setw(15) << atualizado.valorProduto 
                 << endl;
 
-            cout << "________________________________________________\n\n";
-            cout << "O QUE DESEJA ALTERAR (0 PARA SAIR): ";
+            cout << "________________________________________________\n"
+                 << "             DIGITE 999 PARA SAIR               \n"
+                 << "________________________________________________\n";
+            cout << "O QUE DESEJA ALTERAR: ";
 
             cin >> entradaUsuario;
 
-            if (entradaUsuario == "0") break; // sai do menu de atualização
+            if (entradaUsuario == "999") break; // sai do menu de atualização
 
             int entradaUsuarioInt;
             try {
@@ -677,24 +680,50 @@ struct Interacao {
 
     void menuRemoverProduto() {
 
-        string id;
         Produto produto;
-
-        cout << "________________________________________________\n" 
-             << "                                                \n" 
-             << "                REMOVER PRODUTO                 \n" 
-             << "________________________________________________\n";
-        listarProdutos(estoque);
-
-        cout << "INFORME O ID DO PRODUTO QUE DESEJA REMOVER: ";
-        cin >> id;
-
-        int inteiroId = stoi(id);
-        estoque.buscarProdutoPorId(inteiroId);
+        string entradaUsuario;
         
+        while (true) {
+            cout << "________________________________________________\n" 
+                 << "                                                \n" 
+                 << "                REMOVER PRODUTO                 \n" 
+                 << "________________________________________________\n";
+            listarProdutos(estoque);
+            cout << "________________________________________________\n"
+                 << "              DIGITE 0 PARA SAIR                \n"
+                 << "________________________________________________\n\n";
 
-        cout << "TEM CERTEZA QUE DESEJA REMOVER ";
+            try {
 
+                cout << "INFORME O ID:";
+                cin >> entradaUsuario;
+
+                if (entradaUsuario == "0") return;
+
+                produto = validar.buscarProduto(entradaUsuario);
+
+                while (true) {
+                    cout << "TEM CERTEZA QUE DESEJA REMOVER: " << produto.nomeProduto << endl;
+                    cout << "1)Sim" << endl << "2)Nao" << endl << ":";
+                    cin >> entradaUsuario;
+    
+                    if (entradaUsuario == "1") {
+                        validar.removerProduto(produto.id);
+                        cout << "PRODUTO REMOVIDO COM SUCESSO!";
+                        break;
+                    } else if (entradaUsuario == "2") {
+                        system("cls");
+                        break;
+                    } else {
+                        cout << "ERRO: Entrada invalida!" << endl;
+                        continue;
+                    }
+                }
+
+            } catch(const exception& e) {
+                cerr << e.what() << endl;
+            }
+        }
 
     }
     
