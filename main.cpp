@@ -7,6 +7,7 @@
 #include <ctime> // Tempo real
 #include <vector> // Vetores dinamicos
 #include <limits>
+#include <chrono>
 
 using namespace std;
 
@@ -25,10 +26,32 @@ struct Produto {
     }
 };
 
+struct Data {
+    int dia, mes, ano;
+
+    Data () {
+        time_t tempo = time(0);
+        tm* x = localtime(&tempo);
+
+        dia = x->tm_mday;
+        mes = x->tm_mon + 1;
+        ano = x->tm_year + 1900; 
+    }
+
+     void adicionarMeses(int n) {
+        mes += n;
+        while (mes > 12) {
+            mes -= 12;
+            ano++;
+        }
+    }
+
+};
+
 struct Carrinho {
 
     vector<Produto> produtosCarrinho;
-    float valorCompra;
+    float valorCompra = 0;
 
 
     void adicionarProduto(Produto produto) {
@@ -1001,6 +1024,9 @@ struct Interacao {
     
     void menuPagamentoCartao(){
         float valor = carrinho.valorCompra;
+        string entradaUsuario;
+        float entradaInt;
+        Data data;
 
         cout << "_______________________________________________\n"
              << "                        |                      \n"
@@ -1015,18 +1041,50 @@ struct Interacao {
                 }
              }
         cout << "________________________|_______________________\n\n";
+        cout << "Valor total da compra: R$" << carrinho.valorCompra << endl;
+
+
+        while (true) {
+            
+            cout << "Informe a quantidade de parcelas: ";
+            cin >> entradaUsuario;
+            try {
+                entradaInt = stoi(entradaUsuario);
+            } catch (const invalid_argument &e) {
+                cerr << "ERRO: Entrada invalida!" << endl;
+            }
+
+            if (entradaInt < 2 || entradaInt > 12) {
+                cout << "ERRO: Quantidade de parcelas invalidas!" << endl;
+                continue;
+            } else {
+                cout << "Sua compra sera parcelada em " << entradaInt << " vezes." << endl
+                     << "DATAS PARCELAS: " << endl;
+
+                for (int i = 0; i < entradaInt; i++) {
+                    cout << setfill('0')
+                        << setw(2) << data.dia << "/"
+                        << setw(2) << data.mes << "/"
+                        << setw(4) << data.ano
+                        << endl;
+
+                    data.adicionarMeses(1);
+                }
+
+                break;
+            }
+
+        }
     }
-    
 };
 
 int main() {
-    srand(time(0)); // Valor aleatorio baseado no tempo local atual!
+    srand(time(0));
 
     Interacao interacao;
     
     while (true) {
         system("cls");
         interacao.menuPrincipal();
-        break;
     }
 }
